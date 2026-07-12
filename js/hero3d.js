@@ -102,10 +102,11 @@
           vColor = mix(aCI, aCW, m);
           vec3 base = mix(aIcon, aWord, m);
           vec3 pos = mix(aRand, base, uProgress);
-          float d = distance(pos.xy, uMouse);
-          float ripple = sin(d*2.6 - uTime*2.4) * exp(-d*0.6) * uAmp;
-          float wave = sin(pos.x*1.3 + uTime*0.6)*0.05 + cos(pos.y*1.3 - uTime*0.5)*0.05;
-          pos.z += ripple + wave*uAmp*3.0 + m*(1.0-m)*sin(pos.x*8.0+uTime*3.0)*0.25; // dispersión en el morph
+          vec2 away = pos.xy - uMouse; float dd = length(away);
+          float force = exp(-dd*dd*2.4) * 0.5 * uProgress;                 // repulsión: se apartan del cursor
+          pos.xy += (dd > 1e-4 ? away/dd : vec2(0.0)) * force;
+          pos.z += (sin(pos.x*1.3+uTime*0.6)+cos(pos.y*1.3-uTime*0.5))*0.03*uProgress
+                 + m*(1.0-m)*sin(pos.x*8.0+uTime*3.0)*0.25;                // respiración + dispersión en el morph
           vA = 0.5 + 0.5*uProgress;
           vec4 mv = modelViewMatrix * vec4(pos,1.0);
           gl_Position = projectionMatrix * mv;
@@ -122,8 +123,8 @@
       const w = canvas.clientWidth, h = canvas.clientHeight;
       renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
       halfH = Math.tan(rad(25)) * camera.position.z; halfW = halfH * camera.aspect;
-      gscale = Math.min(0.82 * halfW / 2.6, 0.6 * halfH / 1.3);   // cabe el wordmark (ancho) y el ícono (alto)
-      points.scale.setScalar(gscale); points.position.y = halfH * 0.10;
+      gscale = Math.min(0.8 * halfW / 2.6, 0.48 * halfH / 1.3);   // cabe wordmark (ancho) + ícono (alto), deja aire abajo p/ el texto
+      points.scale.setScalar(gscale); points.position.y = halfH * 0.42;
       uniforms.uSizeScale.value = 15 * renderer.getPixelRatio();
     }
     addEventListener('resize', resize); resize();
