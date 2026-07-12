@@ -124,7 +124,7 @@
       renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
       halfH = Math.tan(rad(25)) * camera.position.z; halfW = halfH * camera.aspect;
       gscale = Math.min(0.9 * halfW / 2.6, 0.62 * halfH / 1.3);   // logo MÁS grande; cabe wordmark (ancho) + ícono (alto)
-      points.scale.setScalar(gscale); points.position.y = halfH * 0.46;
+      points.scale.setScalar(gscale); points.position.y = halfH * 0.2;
       uniforms.uSizeScale.value = 15 * renderer.getPixelRatio();
     }
     addEventListener('resize', resize); resize();
