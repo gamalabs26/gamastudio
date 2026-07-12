@@ -63,12 +63,13 @@
     const wordPts = samplePts(g, WW, WH, WH / 2 / 0.8);
 
     const iL = iconPts.length, wL = wordPts.length, N = Math.max(iL, wL);
+    const WSCALE = 1.28;                                  // wordmark más grande (el ícono conserva su tamaño p/ el match-cut al video)
     const aIcon = new Float32Array(N * 3), aWord = new Float32Array(N * 3), aRand = new Float32Array(N * 3),
       aCI = new Float32Array(N * 3), aCW = new Float32Array(N * 3), aSize = new Float32Array(N);
     for (let i = 0; i < N; i++) {
       const ip = iconPts[i % iL], wp = wordPts[i % wL];
       aIcon[i * 3] = ip[0]; aIcon[i * 3 + 1] = ip[1]; aIcon[i * 3 + 2] = (Math.random() - .5) * .14;
-      aWord[i * 3] = wp[0]; aWord[i * 3 + 1] = wp[1]; aWord[i * 3 + 2] = (Math.random() - .5) * .14;
+      aWord[i * 3] = wp[0] * WSCALE; aWord[i * 3 + 1] = wp[1] * WSCALE; aWord[i * 3 + 2] = (Math.random() - .5) * .14;
       aCI[i * 3] = ip[2]; aCI[i * 3 + 1] = ip[3]; aCI[i * 3 + 2] = ip[4];
       aCW[i * 3] = wp[2]; aCW[i * 3 + 1] = wp[3]; aCW[i * 3 + 2] = wp[4];
       const rr = 6 + Math.random() * 3, th = Math.random() * 6.283, ph = Math.acos(2 * Math.random() - 1);
@@ -106,7 +107,7 @@
           vec3 base = mix(aWord, aIcon, m);
           vec3 pos = mix(aRand, base, uProgress);
           vec2 away = pos.xy - uMouse; float dd = length(away);
-          float force = exp(-dd*dd*3.4) * 0.16 * uProgress;      // repulsión sutil con el mouse
+          float force = exp(-dd*dd*9.0) * 0.10 * uProgress;      // repulsión sutil con el mouse (radio chico)
           pos.xy += (dd > 1e-4 ? away/dd : vec2(0.0)) * force;
           pos.z += (sin(pos.x*1.3+uTime*0.6)+cos(pos.y*1.3-uTime*0.5))*0.03*uProgress
                  + m*(1.0-m)*sin(pos.x*8.0+uTime*3.0)*0.2;        // dispersión durante el morph

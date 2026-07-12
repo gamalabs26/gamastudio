@@ -70,11 +70,11 @@
     window.__ACT1P = p;                                  // lo leen las partículas del logo (hero3d.js)
     canvas.style.opacity = sstep(0.14, 0.16, p).toFixed(3);   // el video (ícono de partículas → ADN) toma la escena tras el morph
     if (ready) renderFrame(p);
-    // copy del hero: presente al inicio, se desliza y sale mientras la palabra se deshace (movimiento, no zoom)
+    // copy del hero: SE SOSTIENE durante el morph (sin recorrerse) y sólo se disuelve en la transición al ADN
     if (overlay) {
-      const g = sstep(0.02, 0.14, p);
+      const g = sstep(0.14, 0.185, p);                   // hasta que el video toma la escena (dive al ADN)
       overlay.style.opacity = (1 - g).toFixed(3);
-      overlay.style.transform = `translateX(-50%) translateY(${(g * 70).toFixed(0)}px)`;
+      overlay.style.transform = `translateX(-50%) translateY(${(g * 16).toFixed(0)}px)`;
       overlay.style.pointerEvents = g > 0.5 ? 'none' : 'auto';
     }
     if (cue) cue.style.opacity = (1 - clamp(p / 0.05)).toFixed(3);
