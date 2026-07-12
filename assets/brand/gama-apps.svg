@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 52" fill="none" width="220" height="52">
+  <defs>
+    <radialGradient id="ap-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="ap-blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="44" height="44" rx="12" fill="#060F18" x="0" y="4"/>
+  <circle cx="22" cy="26" r="13" fill="url(#ap-glow)"/>
+  <!-- 4 esquinas + 2 laterales: 6 patitas -->
+  <line x1="22" y1="26" x2="10" y2="14" stroke="#06B6D4" stroke-width="1.1" stroke-linecap="round" opacity="0.55"/>
+  <line x1="22" y1="26" x2="34" y2="14" stroke="#06B6D4" stroke-width="1.1" stroke-linecap="round" opacity="0.55"/>
+  <line x1="22" y1="26" x2="34" y2="38" stroke="#06B6D4" stroke-width="1.1" stroke-linecap="round" opacity="0.45"/>
+  <line x1="22" y1="26" x2="10" y2="38" stroke="#06B6D4" stroke-width="1.1" stroke-linecap="round" opacity="0.45"/>
+  <line x1="22" y1="26" x2="5"  y2="26" stroke="#06B6D4" stroke-width="1.1" stroke-linecap="round" opacity="0.50"/>
+  <line x1="22" y1="26" x2="39" y2="26" stroke="#06B6D4" stroke-width="1.1" stroke-linecap="round" opacity="0.50"/>
+  <!-- 6 nodos -->
+  <circle cx="10" cy="14" r="2.8" fill="#06B6D4" opacity="0.85"/>
+  <circle cx="34" cy="14" r="2.8" fill="#06B6D4" opacity="0.85"/>
+  <circle cx="34" cy="38" r="2.5" fill="#06B6D4" opacity="0.65"/>
+  <circle cx="10" cy="38" r="2.5" fill="#06B6D4" opacity="0.65"/>
+  <circle cx="5"  cy="26" r="2.4" fill="#06B6D4" opacity="0.60"/>
+  <circle cx="39" cy="26" r="2.4" fill="#06B6D4" opacity="0.60"/>
+  <!-- Centro -->
+  <circle cx="22" cy="26" r="5.2" fill="#06B6D4" filter="url(#ap-blur)"/>
+  <circle cx="22" cy="26" r="3.3" fill="#22D3EE"/>
+  <text x="54" y="24" font-family="Inter, sans-serif" font-weight="900" font-size="17" fill="#FFFFFF" letter-spacing="-0.6">Gama<tspan fill="#06B6D4">Apps</tspan></text>
+  <text x="55" y="40" font-family="Inter, sans-serif" font-weight="500" font-size="9.5" fill="#475569" letter-spacing="2.2">APP DEVELOPMENT</text>
+</svg>

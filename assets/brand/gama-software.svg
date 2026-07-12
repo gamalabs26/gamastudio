@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 52" fill="none" width="240" height="52">
+  <defs>
+    <radialGradient id="sw-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22C55E" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#22C55E" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="sw-blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="44" height="44" rx="12" fill="#0A1A0D" x="0" y="4"/>
+  <circle cx="22" cy="26" r="13" fill="url(#sw-glow)"/>
+  <!-- Triángulo superior + 2 inferiores -->
+  <line x1="22" y1="26" x2="22"   y2="13"   stroke="#22C55E" stroke-width="1.1" stroke-linecap="round" opacity="0.60"/>
+  <line x1="22" y1="26" x2="33.5" y2="19.5" stroke="#22C55E" stroke-width="1.1" stroke-linecap="round" opacity="0.60"/>
+  <line x1="22" y1="26" x2="10.5" y2="19.5" stroke="#22C55E" stroke-width="1.1" stroke-linecap="round" opacity="0.60"/>
+  <line x1="22" y1="26" x2="33.5" y2="32.5" stroke="#22C55E" stroke-width="1.1" stroke-linecap="round" opacity="0.30"/>
+  <line x1="22" y1="26" x2="10.5" y2="32.5" stroke="#22C55E" stroke-width="1.1" stroke-linecap="round" opacity="0.30"/>
+  <line x1="22" y1="26" x2="22"   y2="39"   stroke="#22C55E" stroke-width="1.1" stroke-linecap="round" opacity="0.18"/>
+  <!-- Nodos -->
+  <circle cx="22"   cy="13"   r="2.8" fill="#22C55E" opacity="0.90"/>
+  <circle cx="33.5" cy="19.5" r="2.8" fill="#22C55E" opacity="0.90"/>
+  <circle cx="10.5" cy="19.5" r="2.8" fill="#22C55E" opacity="0.90"/>
+  <circle cx="33.5" cy="32.5" r="2.3" fill="#22C55E" opacity="0.45"/>
+  <circle cx="10.5" cy="32.5" r="2.3" fill="#22C55E" opacity="0.45"/>
+  <circle cx="22"   cy="39"   r="2"   fill="#22C55E" opacity="0.22"/>
+  <!-- Centro -->
+  <circle cx="22" cy="26" r="5" fill="#22C55E" filter="url(#sw-blur)"/>
+  <circle cx="22" cy="26" r="3.3" fill="#4ADE80"/>
+  <text x="54" y="24" font-family="Inter, sans-serif" font-weight="900" font-size="17" fill="#FFFFFF" letter-spacing="-0.6">Gama<tspan fill="#22C55E">Software</tspan></text>
+  <text x="55" y="40" font-family="Inter, sans-serif" font-weight="500" font-size="9.5" fill="#475569" letter-spacing="2.2">CUSTOM SOLUTIONS</text>
+</svg>

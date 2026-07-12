@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 52" fill="none" width="220" height="52">
+  <defs>
+    <radialGradient id="gl-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="gl-blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="44" height="44" rx="12" fill="#0D0B1A" x="0" y="4"/>
+  <circle cx="22" cy="26" r="13" fill="url(#gl-glow)"/>
+  <line x1="22" y1="26" x2="22"   y2="13"   stroke="#8B5CF6" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/>
+  <line x1="22" y1="26" x2="33.3" y2="19.5" stroke="#8B5CF6" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/>
+  <line x1="22" y1="26" x2="33.3" y2="32.5" stroke="#8B5CF6" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/>
+  <line x1="22" y1="26" x2="22"   y2="39"   stroke="#8B5CF6" stroke-width="1.1" stroke-linecap="round" opacity="0.3"/>
+  <line x1="22" y1="26" x2="10.7" y2="32.5" stroke="#8B5CF6" stroke-width="1.1" stroke-linecap="round" opacity="0.3"/>
+  <line x1="22" y1="26" x2="10.7" y2="19.5" stroke="#8B5CF6" stroke-width="1.1" stroke-linecap="round" opacity="0.3"/>
+  <circle cx="22"   cy="13"   r="2.8" fill="#8B5CF6" opacity="0.8"/>
+  <circle cx="33.3" cy="19.5" r="2.8" fill="#8B5CF6" opacity="0.8"/>
+  <circle cx="33.3" cy="32.5" r="2.5" fill="#8B5CF6" opacity="0.55"/>
+  <circle cx="22"   cy="39"   r="2.5" fill="#8B5CF6" opacity="0.45"/>
+  <circle cx="10.7" cy="32.5" r="2.5" fill="#8B5CF6" opacity="0.45"/>
+  <circle cx="10.7" cy="19.5" r="2.8" fill="#8B5CF6" opacity="0.65"/>
+  <circle cx="22" cy="26" r="5" fill="#8B5CF6" filter="url(#gl-blur)"/>
+  <circle cx="22" cy="26" r="3.2" fill="#A78BFA"/>
+  <text x="54" y="24" font-family="Inter, sans-serif" font-weight="900" font-size="17" fill="#FFFFFF" letter-spacing="-0.6">Gama<tspan fill="#8B5CF6">Labs</tspan></text>
+  <text x="55" y="40" font-family="Inter, sans-serif" font-weight="500" font-size="9.5" fill="#475569" letter-spacing="2.2">SOFTWARE STUDIO</text>
+</svg>

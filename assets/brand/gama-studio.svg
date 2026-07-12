@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 52" fill="none" width="220" height="52">
+  <defs>
+    <radialGradient id="st-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#EF4444" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#EF4444" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="st-blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="44" height="44" rx="12" fill="#120818" x="0" y="4"/>
+  <circle cx="22" cy="26" r="13" fill="url(#st-glow)"/>
+  <!-- Diamante cardinal (arriba, derecha, abajo, izquierda) -->
+  <line x1="22" y1="26" x2="22" y2="13"  stroke="#EF4444" stroke-width="1.1" stroke-linecap="round" opacity="0.60"/>
+  <line x1="22" y1="26" x2="35" y2="26"  stroke="#EF4444" stroke-width="1.1" stroke-linecap="round" opacity="0.55"/>
+  <line x1="22" y1="26" x2="22" y2="39"  stroke="#EF4444" stroke-width="1.1" stroke-linecap="round" opacity="0.35"/>
+  <line x1="22" y1="26" x2="9"  y2="26"  stroke="#EF4444" stroke-width="1.1" stroke-linecap="round" opacity="0.35"/>
+  <!-- Diagonales secundarias -->
+  <line x1="22" y1="26" x2="31.5" y2="16.5" stroke="#EF4444" stroke-width="1.0" stroke-linecap="round" opacity="0.22"/>
+  <line x1="22" y1="26" x2="31.5" y2="35.5" stroke="#EF4444" stroke-width="1.0" stroke-linecap="round" opacity="0.15"/>
+  <line x1="22" y1="26" x2="12.5" y2="16.5" stroke="#EF4444" stroke-width="1.0" stroke-linecap="round" opacity="0.22"/>
+  <line x1="22" y1="26" x2="12.5" y2="35.5" stroke="#EF4444" stroke-width="1.0" stroke-linecap="round" opacity="0.15"/>
+  <!-- Nodos -->
+  <circle cx="22"   cy="13"   r="3"   fill="#EF4444" opacity="0.90"/>
+  <circle cx="35"   cy="26"   r="2.8" fill="#EF4444" opacity="0.80"/>
+  <circle cx="22"   cy="39"   r="2.3" fill="#EF4444" opacity="0.40"/>
+  <circle cx="9"    cy="26"   r="2.3" fill="#EF4444" opacity="0.40"/>
+  <circle cx="31.5" cy="16.5" r="1.8" fill="#FCA5A5" opacity="0.50"/>
+  <circle cx="12.5" cy="16.5" r="1.8" fill="#FCA5A5" opacity="0.50"/>
+  <!-- Centro -->
+  <circle cx="22" cy="26" r="5.2" fill="#EF4444" filter="url(#st-blur)"/>
+  <circle cx="22" cy="26" r="3.3" fill="#FCA5A5"/>
+  <text x="54" y="24" font-family="Inter, sans-serif" font-weight="900" font-size="17" fill="#FFFFFF" letter-spacing="-0.6">Gama<tspan fill="#EF4444">Studio</tspan></text>
+  <text x="55" y="40" font-family="Inter, sans-serif" font-weight="500" font-size="9.5" fill="#475569" letter-spacing="2.2">CREATIVE DESIGN</text>
+</svg>
