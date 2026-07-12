@@ -111,25 +111,27 @@ body.pointer-fine .cursor-glow{opacity:.6}
 .bcursor{position:absolute;left:0;top:0;color:#fff;font-size:.9rem;opacity:0;z-index:5;pointer-events:none;transform:translate(-50%,-50%) rotate(-12deg);filter:drop-shadow(0 2px 5px #000)}
 @media(max-width:900px){.hero{padding-top:104px}.hero-grid{grid-template-columns:1fr;gap:38px;text-align:center}.hero-copy{max-width:none;margin:0 auto}.hero-copy .hero-stats{justify-content:center}.builder{max-width:460px}}
 
-/* --- FASE 2 · ADN del proceso (sticky nativo, sin pin de GSAP) --- */
-.dna{position:relative;height:760vh;margin-top:-100svh;background:radial-gradient(120% 60% at 50% 40%,#160a1e,var(--bg) 70%)}
-.dna-stage{position:sticky;top:0;height:100svh;overflow:hidden}
-.dna-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block;
-  background:#0A0508 url(../assets/dna/frames/f_001.jpg) center/cover no-repeat}
-.dna-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(60% 55% at 50% 45%,transparent,rgba(10,5,8,.35) 78%,var(--bg))}
-.dna-intro{position:absolute;top:clamp(96px,15vh,150px);left:50%;transform:translateX(-50%);z-index:3;
-  text-align:center;width:min(680px,90vw);transition:opacity .3s}
+/* --- ACTO 1 · hero partículas → dive-in → ADN (una secuencia, un stage fijo) --- */
+.act1{position:relative;height:840vh;background:radial-gradient(120% 60% at 50% 42%,#140a1c,var(--bg) 72%)}
+.act1-stage{position:sticky;top:0;height:100svh;overflow:hidden}
+.logo3d{position:absolute;inset:0;width:100%;height:100%;z-index:2;display:block}
+.dna-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:block;opacity:0}
+.act1 .hero-veil{position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:radial-gradient(62% 52% at 50% 42%,transparent,rgba(10,5,8,.4) 76%,var(--bg))}
+.act1 .hero-overlay{position:absolute;left:50%;bottom:clamp(60px,11vh,120px);transform:translateX(-50%);
+  z-index:6;max-width:660px;width:90vw;text-align:center;will-change:opacity}
+.dna-intro{position:absolute;top:clamp(96px,15vh,150px);left:50%;transform:translateX(-50%);z-index:6;
+  text-align:center;width:min(680px,90vw);opacity:0;transition:none}
 .dna-intro .sec-title{font-size:clamp(2.2rem,5.4vw,3.6rem)}
 .dna-intro .sec-desc{margin-top:14px}
 /* flashes que enlazan hero(dive-in)→ADN */
 .hero-flash{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;
   background:radial-gradient(60% 45% at 50% 46%,#fff,rgba(255,220,210,.9) 22%,rgba(239,68,68,.45) 45%,transparent 72%)}
-.dna-flash{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;
+.dna-flash{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;
   background:radial-gradient(60% 45% at 50% 50%,#fff,rgba(255,220,210,.85) 24%,rgba(139,92,246,.4) 48%,transparent 74%)}
 
 /* cards que VIAJAN por el ADN: salen abajo-izquierda → grandes al centro → se esconden arriba-derecha */
-.dna-cards{position:absolute;inset:0;z-index:3;pointer-events:none}
+.dna-cards{position:absolute;inset:0;z-index:7;pointer-events:none}
 .dna-card{position:absolute;left:50%;top:50%;width:min(400px,86vw);opacity:0;will-change:transform,opacity;
   transform:translate(-50%,-50%);border-radius:20px;padding:26px 28px 28px;
   background:linear-gradient(155deg,rgba(28,12,24,.82),rgba(15,12,30,.78));
@@ -147,10 +149,10 @@ body.pointer-fine .cursor-glow{opacity:.6}
 .dna-card p{color:#cbd3df;font-size:1.02rem;line-height:1.55}
 .dna-card[data-side=r]{--dc-acc:#A78BFA;--dc-glow:rgba(139,92,246,.5)}
 .dna-fallback{display:none}
-.dna-nogl .dna-canvas,.dna-nogl .dna-veil,.dna-nogl .dna-cards{display:none}
-.dna-nogl{height:auto;padding:clamp(80px,12vh,140px) clamp(20px,5vw,40px)}
-.dna-nogl .dna-stage{position:static;height:auto;overflow:visible}
-.dna-nogl .dna-intro{position:static;transform:none;width:auto;margin:0 auto 40px}
+.dna-nogl .dna-canvas,.dna-nogl .logo3d,.dna-nogl .hero-veil,.dna-nogl .dna-flash,.dna-nogl .dna-cards,.dna-nogl .hero-scrollcue{display:none}
+.dna-nogl{height:auto;padding:clamp(90px,12vh,140px) clamp(20px,5vw,40px)}
+.dna-nogl .act1-stage{position:static;height:auto;overflow:visible;display:flex;flex-direction:column;align-items:center;gap:36px}
+.dna-nogl .hero-overlay,.dna-nogl .dna-intro{position:static;transform:none;width:auto;max-width:680px;opacity:1}
 .dna-nogl .dna-fallback{display:block;max-width:760px;margin:0 auto;list-style:none;display:grid;gap:14px}
 .dna-nogl .dna-fallback li{padding:18px 22px;background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius-sm);color:var(--muted)}

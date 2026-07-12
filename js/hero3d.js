@@ -7,27 +7,8 @@
   const testGL = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   const bail = () => { canvas.style.display = 'none'; if (fallback) fallback.style.display = 'block'; };
   if (reduce || !testGL || typeof THREE === 'undefined') { bail(); return; }
-
-  /* SCROLL del hero (creado SÍNCRONO y en orden → su pin reserva espacio correctamente).
-     Morphea ícono→wordmark y luego dive-in (túnel de luz) hacia el ADN. */
-  let sProg = 0;
-  {
-    const cue = document.getElementById('heroCue');
-    const flash = document.getElementById('heroFlash');
-    const overlay = document.querySelector('.hero-overlay');
-    if (typeof ScrollTrigger !== 'undefined') {
-      ScrollTrigger.create({
-        trigger: '#hero', start: 'top top', end: '+=200%', pin: true, pinSpacing: true, scrub: .6,
-        onUpdate: self => {
-          sProg = self.progress;
-          if (cue) cue.style.opacity = 1 - Math.min(1, sProg * 3);
-          if (overlay) overlay.style.opacity = (1 - Math.min(1, Math.max(0, (sProg - 0.5) / 0.22))).toFixed(3);
-          if (flash) flash.style.opacity = Math.max(0, Math.min(1, (sProg - 0.72) / 0.28)).toFixed(3);
-        }
-      });
-      addEventListener('load', () => ScrollTrigger.refresh());
-    }
-  }
+  // el progreso lo maneja el controlador único (dna.js) vía window.__ACT1P; aquí solo pintamos partículas
+  const ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
   const ICON = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 4 44 44' width='440' height='440'>
     <defs><radialGradient id='gl' cx='50%' cy='50%' r='50%'><stop offset='0%' stop-color='#EF4444' stop-opacity='0.4'/><stop offset='100%' stop-color='#EF4444' stop-opacity='0'/></radialGradient>
@@ -170,8 +151,10 @@
         uniforms.uProgress.value = Math.min(1, t / 2);
         uniforms.uAmp.value = Math.min(0.5, Math.max(0, (t - 2) * 0.4));
         uniforms.uTime.value = t;
-        uniforms.uMorph.value = Math.min(1, sProg / 0.5);                  // morph ícono→wordmark (primera mitad)
-        uniforms.uWarp2.value = Math.max(0, Math.min(1, (sProg - 0.62) / 0.38));  // dive-in / túnel de luz
+        const p = window.__ACT1P || 0;
+        uniforms.uMorph.value = ss(0, 0.10, p);                            // ícono → wordmark
+        uniforms.uWarp2.value = ss(0.15, 0.26, p);                         // dive-in (las partículas vuelan hacia la cámara)
+        canvas.style.opacity = (1 - ss(0.24, 0.31, p)).toFixed(3);         // se apagan al entrar al ADN
         mmx += (tmx - mmx) * .08; mmy += (tmy - mmy) * .08;
         uniforms.uMouse.value.set(mmx, mmy);
         renderer.render(scene, camera);

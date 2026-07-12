@@ -36,34 +36,27 @@
 
 <main id="top">
 
-  <!-- HERO — logo de GamaStudio en partículas 3D (ondas de mouse) -->
-  <section class="hero" id="hero">
-    <canvas class="logo3d" id="logo3d" aria-hidden="true"></canvas>
-    <img class="logo-fallback" src="assets/brand/gama-studio.svg" alt="GamaStudio" aria-hidden="true">
-    <div class="hero-veil" aria-hidden="true"></div>
-    <div class="hero-overlay">
-      <p class="eyebrow">DIVISIÓN CREATIVA DE GAMALABS</p>
-      <h1 class="hero-tagline">Diseño que <span class="grad">convierte</span>.</h1>
-      <p class="hero-sub">Identidad, UI/UX y sitios web que hacen memorable a tu negocio.</p>
-      <div class="hero-cta">
-        <a class="btn btn-cta magnetic" href="#contacto">Cuéntanos tu proyecto <span class="arr">→</span></a>
-        <a class="btn btn-ghost" href="#proyectos">Ver portafolio</a>
-      </div>
-    </div>
-    <div class="hero-scrollcue" id="heroCue" aria-hidden="true"><span>desliza</span><i></i></div>
-    <div class="hero-flash" id="heroFlash" aria-hidden="true"></div>
-  </section>
-
-  <!-- FASE 2 · túnel de luz → ADN bicolor del proceso -->
-  <section class="dna" id="proceso">
-    <div class="dna-stage">
-      <canvas class="dna-canvas" id="dnaCanvas" aria-hidden="true"></canvas>
-      <div class="dna-veil" aria-hidden="true"></div>
+  <!-- ACTO 1 · hero partículas → dive-in → ADN del proceso (UNA sola secuencia cinematográfica) -->
+  <section class="act1" id="proceso">
+    <div class="act1-stage">
+      <canvas class="dna-canvas" id="dnaCanvas" aria-hidden="true"></canvas>   <!-- ADN (frames), aparece en el dive -->
+      <canvas class="logo3d" id="logo3d" aria-hidden="true"></canvas>          <!-- partículas del logo, encima -->
+      <img class="logo-fallback" src="assets/brand/gama-studio.svg" alt="GamaStudio" aria-hidden="true">
+      <div class="hero-veil" aria-hidden="true"></div>
       <div class="dna-flash" id="dnaFlash" aria-hidden="true"></div>
+      <div class="hero-overlay">
+        <p class="eyebrow">DIVISIÓN CREATIVA DE GAMALABS</p>
+        <h1 class="hero-tagline">Diseño que <span class="grad">convierte</span>.</h1>
+        <p class="hero-sub">Identidad, UI/UX y sitios web que hacen memorable a tu negocio.</p>
+        <div class="hero-cta">
+          <a class="btn btn-cta magnetic" href="#contacto">Cuéntanos tu proyecto <span class="arr">→</span></a>
+          <a class="btn btn-ghost" href="#proyectos">Ver portafolio</a>
+        </div>
+      </div>
       <div class="dna-intro">
         <span class="sec-num">El ADN del proyecto</span>
         <h2 class="sec-title">Cada web nace de una <span class="grad">doble hélice</span>.</h2>
-        <p class="sec-desc">Estrategia y ejecución entrelazadas. Desliza y mira el proceso girar.</p>
+        <p class="sec-desc">Estrategia y ejecución entrelazadas.</p>
       </div>
       <div class="dna-cards" aria-hidden="true">
         <article class="dna-card" data-side="l"><span class="dc-n">01</span><h3>Investigación de marca</h3><p>Entendemos tu negocio, tu mercado y a quién le hablas antes de dibujar un solo pixel.</p></article>
@@ -74,6 +67,7 @@
         <article class="dna-card" data-side="r"><span class="dc-n">06</span><h3>Diseño</h3><p>Iteramos hasta el pixel final, con tu identidad de marca como única guía.</p></article>
         <article class="dna-card" data-side="l"><span class="dc-n">07</span><h3>Desarrollo</h3><p>Lo construimos rápido, ligero y listo para convertir — sin plantillas.</p></article>
       </div>
+      <div class="hero-scrollcue" id="heroCue" aria-hidden="true"><span>desliza</span><i></i></div>
     </div>
     <ol class="dna-fallback">
       <li><b>01 · Investigación de marca</b> — Entendemos tu negocio, tu mercado y a quién le hablas.</li>
@@ -172,8 +166,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/app.js?v=10"></script>
-<script src="js/hero3d.js?v=10"></script>
-<script src="js/dna.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
+<script src="js/hero3d.js?v=11"></script>
+<script src="js/dna.js?v=11"></script>
 </body>
 </html>

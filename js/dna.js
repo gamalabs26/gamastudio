@@ -1,57 +1,67 @@
-/* ==== GAMASTUDIO — Fase 2: ADN fotorreal (video Seedance) scrubeado con el scroll ====
-   Storytelling: el dive-in de partículas (túnel de luz) desemboca en la vista AXIAL del ADN
-   (la "O" girando, como entrar por el eje) y la cámara rota hasta verlo de FRENTE. De ahí,
-   la hélice sigue girando y las 7 cards del proceso VIAJAN por el ADN: nacen abajo-izquierda,
-   crecen al centro y se esconden arriba-derecha, una tras otra.
-   Frames: 1..61 = transición axial→frontal · 62..149 = rotación de frente.
-   El progreso se lee de la GEOMETRÍA real del sticky (inmune a los spacers de otros pins). */
+/* ==== GAMASTUDIO — ACTO 1: hero partículas → dive-in → ADN (una sola secuencia) ====
+   Controlador único. Lee el progreso de la sección (#proceso/.act1) por geometría real y orquesta:
+   - las partículas del logo (hero3d.js las lee de window.__ACT1P): ícono→wordmark→dive-in
+   - el ADN fotorreal (frames Seedance) que APARECE por debajo mientras las partículas vuelan (dive)
+   - túnel de luz (flash) + el ADN entra en vista AXIAL (la "O") y rota a FRONTAL
+   - las 7 cards del proceso que VIAJAN por el ADN (abajo-izq → centro → arriba-der).
+   Todo en un mismo stage fijo → es adentrarse, no cambiar de sección. */
 (() => {
-  const canvas = document.getElementById('dnaCanvas');
   const section = document.getElementById('proceso');
-  if (!canvas || !section) return;
+  const canvas = document.getElementById('dnaCanvas');
+  if (!section || !canvas) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ctx = canvas.getContext('2d');
-  if (reduce || !ctx) { section.classList.add('dna-nogl'); return; }
+  if (reduce || !ctx) { section.classList.add('dna-nogl'); window.__ACT1P = 0; return; }
 
   const N = 149, TRANS = 61, PAD = 'assets/dna/frames/';
-  const transEndP = 0.05 + 0.92 * (TRANS - 1) / (N - 1);        // progreso donde llegamos a la vista frontal (~0.42)
-  const imgs = new Array(N + 1); let loaded = 0, ready = false, curImg = null;
   const dpr = Math.min(devicePixelRatio || 1, 2);
   const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const clamp = x => Math.max(0, Math.min(1, x));
 
+  /* línea de tiempo (p sobre toda la sección) */
+  const FRAME_START = 0.24, FRAME_SPAN = 0.72;        // el ADN se scrubea de p=0.24 a 0.96
+  const transEndDp = (TRANS - 1) / (N - 1);
+  const frontP = FRAME_START + transEndDp * FRAME_SPAN; // p donde llegamos a la vista frontal (~0.53)
+
+  /* precarga de frames */
+  const imgs = new Array(N + 1); let loaded = 0, ready = false, curImg = null;
   function drawCover(img) {
-    if (!img || !img.complete || !img.naturalWidth) return;
-    curImg = img;
+    if (!img || !img.complete || !img.naturalWidth) return; curImg = img;
     const cw = canvas.width, ch = canvas.height, iw = img.naturalWidth, ih = img.naturalHeight;
     const s = Math.max(cw / iw, ch / ih), w = iw * s, h = ih * s;
-    ctx.clearRect(0, 0, cw, ch);
-    ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+    ctx.clearRect(0, 0, cw, ch); ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
   }
   function resize() {
     canvas.width = Math.round(canvas.clientWidth * dpr);
     canvas.height = Math.round(canvas.clientHeight * dpr);
     if (curImg) drawCover(curImg);
   }
-  addEventListener('resize', resize);
-
+  addEventListener('resize', resize); resize();
   for (let i = 1; i <= N; i++) {
     const im = new Image();
     im.onload = () => { loaded++; if (!ready && (loaded > 6 || i === 1)) { ready = true; resize(); } };
     im.src = `${PAD}f_${String(i).padStart(3, '0')}.jpg`;
     imgs[i] = im;
   }
+  function renderFrame(dp) {
+    const idx = 1 + Math.round(clamp(dp) * (N - 1)), im = imgs[idx];
+    if (im && im.complete && im.naturalWidth) drawCover(im);
+    else for (let d = 1; d < N; d++) { const a = imgs[idx - d], b = imgs[idx + d]; if (a && a.complete) { drawCover(a); break; } if (b && b.complete) { drawCover(b); break; } }
+  }
 
   /* cards que VIAJAN por el ADN */
   const cards = Array.from(section.querySelectorAll('.dna-card'));
   const nCards = cards.length || 1;
   const intro = section.querySelector('.dna-intro');
+  const overlay = section.querySelector('.hero-overlay');
+  const cue = document.getElementById('heroCue');
   const flash = document.getElementById('dnaFlash');
-  const CST = transEndP + 0.03, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);
+  const CST = frontP + 0.02, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);
   function updateCards(p) {
-    const cp = Math.min(1, Math.max(0, (p - CST) / (0.99 - CST)));
+    const cp = clamp((p - CST) / (0.985 - CST));
     const Xmax = Math.min(innerWidth * 0.30, 360), Ymax = innerHeight * 0.34;
     cards.forEach((c, i) => {
-      const u = (cp - i * STEP) / WIN;                          // 0=abajo-izq · 0.5=centro · 1=arriba-der
+      const u = (cp - i * STEP) / WIN;
       if (u <= -0.05 || u >= 1.05) { if (c.style.opacity !== '0') { c.style.opacity = '0'; c.style.pointerEvents = 'none'; } return; }
       const x = (-1 + 2 * u) * Xmax, y = (1 - 2 * u) * Ymax;
       const sc = 0.6 + 0.5 * Math.sin(Math.max(0, Math.min(1, u)) * Math.PI);
@@ -63,41 +73,34 @@
     });
   }
 
-  function frameFor(p) {
-    const fp = Math.min(1, Math.max(0, (p - 0.03) / 0.94));
-    return 1 + Math.round(fp * (N - 1));
-  }
-  function render(p) {
-    const idx = frameFor(p), im = imgs[idx];
-    if (im && im.complete && im.naturalWidth) drawCover(im);
-    else for (let d = 1; d < N; d++) { const a = imgs[idx - d], b = imgs[idx + d]; if (a && a.complete) { drawCover(a); break; } if (b && b.complete) { drawCover(b); break; } }
-  }
   function apply(p) {
-    if (ready) render(p);
+    window.__ACT1P = p;                                   // lo leen las partículas (hero3d.js)
+    if (ready) renderFrame((p - FRAME_START) / FRAME_SPAN);
+    canvas.style.opacity = sstep(0.15, 0.26, p).toFixed(3);           // el ADN APARECE mientras las partículas vuelan
+    canvas.style.transform = `scale(${(1 + 0.16 * (1 - sstep(0.15, 0.34, p))).toFixed(3)})`;  // dive: zoom-out al entrar
+    if (flash) flash.style.opacity = (sstep(0.16, 0.24, p) * (1 - sstep(0.24, 0.35, p))).toFixed(3);  // túnel de luz
+    if (overlay) overlay.style.opacity = (1 - sstep(0.09, 0.16, p)).toFixed(3);     // texto de bienvenida se va en el dive
+    if (cue) cue.style.opacity = (1 - clamp(p / 0.06)).toFixed(3);
+    if (intro) intro.style.opacity = (sstep(frontP - 0.10, frontP - 0.02, p) * (1 - sstep(frontP + 0.03, frontP + 0.13, p))).toFixed(3);
     updateCards(p);
-    if (intro) intro.style.opacity = (sstep(transEndP - 0.14, transEndP - 0.02, p) * (1 - sstep(transEndP + 0.02, transEndP + 0.14, p))).toFixed(3);
-    if (flash) flash.style.opacity = (1 - Math.min(1, p / 0.06)).toFixed(3);          // ADN emerge de la luz (vista axial)
-    canvas.style.transform = `scale(${(1 + 0.12 * (1 - Math.min(1, p / 0.05))).toFixed(3)})`;   // dive: leve zoom-out al entrar
   }
 
-  /* progreso desde la geometría real del sticky (no depende de ScrollTrigger) */
+  /* progreso desde la geometría real (inmune a pins) + loop rAF suavizado */
   function calcProg() {
     const rect = section.getBoundingClientRect();
     const total = Math.max(1, section.offsetHeight - innerHeight);
-    return Math.min(1, Math.max(0, -rect.top / total));
+    return clamp(-rect.top / total);
   }
-
-  let prog = 0, target = 0, active = false, raf = 0;
+  let prog = 0, active = true, raf = 0;
   function tick() {
-    target = calcProg();
+    const target = calcProg();
     prog += (target - prog) * 0.16;
     if (Math.abs(target - prog) < 0.0004) prog = target;
     apply(prog);
-    if (active || Math.abs(target - prog) > 0.0004) raf = requestAnimationFrame(tick);
-    else raf = 0;
+    if (active || Math.abs(target - prog) > 0.0004) raf = requestAnimationFrame(tick); else raf = 0;
   }
   function kick() { if (!raf) raf = requestAnimationFrame(tick); }
-  new IntersectionObserver(e => { active = e[0].isIntersecting; if (active) kick(); }, { rootMargin: '200px' }).observe(section);
+  new IntersectionObserver(e => { active = e[0].isIntersecting; if (active) kick(); }, { rootMargin: '300px' }).observe(section);
   addEventListener('scroll', kick, { passive: true });
   addEventListener('resize', () => { resize(); kick(); });
   apply(0);
