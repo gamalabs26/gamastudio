@@ -1,0 +1,144 @@
+/* ==== GAMASTUDIO — motor ==== */
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(pointer: fine)').matches;
+gsap.registerPlugin(ScrollTrigger);
+
+/* cursor custom + glow */
+(() => {
+  if (!fine) return;
+  document.body.classList.add('pointer-fine');
+  const dot = document.getElementById('cursor'), glow = document.getElementById('cursorGlow');
+  let tx = innerWidth / 2, ty = innerHeight / 2, gx = tx, gy = ty;
+  addEventListener('pointermove', e => {
+    tx = e.clientX; ty = e.clientY;
+    dot.style.transform = `translate(${tx}px,${ty}px) translate(-50%,-50%)`;
+  }, { passive: true });
+  (function loop() { gx += (tx - gx) * .12; gy += (ty - gy) * .12; glow.style.transform = `translate(${gx}px,${gy}px) translate(-50%,-50%)`; requestAnimationFrame(loop); })();
+  document.querySelectorAll('a,button,.magnetic,.tilt').forEach(el => {
+    el.addEventListener('pointerenter', () => dot.classList.add('big'));
+    el.addEventListener('pointerleave', () => dot.classList.remove('big'));
+  });
+})();
+
+/* nav scrolled */
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
+
+/* APERTURA — canvas que ecoa el logo (radial rojo reactivo al mouse) */
+function aperture(canvas, opts = {}) {
+  const ctx = canvas.getContext('2d');
+  const DPR = Math.min(devicePixelRatio || 1, 1.6);
+  let W, H, mx = .5, my = .5, tmx = .5, tmy = .5;
+  function size() { W = canvas.width = canvas.clientWidth * DPR; H = canvas.height = canvas.clientHeight * DPR; }
+  addEventListener('resize', size); size();
+  addEventListener('pointermove', e => { tmx = e.clientX / innerWidth; tmy = e.clientY / innerHeight; }, { passive: true });
+  let vis = true;
+  new IntersectionObserver(es => vis = es[0].isIntersecting).observe(canvas);
+  const RINGS = 3, LINES = opts.lines || 40, DOTS = 6, t0 = performance.now();
+  function frame(now) {
+    if (vis && !document.hidden) {
+      mx += (tmx - mx) * .05; my += (tmy - my) * .05;
+      const t = reduce ? 0 : (now - t0) / 1000;
+      ctx.clearRect(0, 0, W, H);
+      const cx = W / 2 + (mx - .5) * W * .12, cy = H / 2 + (my - .5) * H * .12;
+      const R = Math.min(W, H) * (opts.scale || .42);
+      ctx.globalCompositeOperation = 'lighter';
+      // anillos
+      for (let i = 1; i <= RINGS; i++) { ctx.beginPath(); ctx.arc(cx, cy, R * (i / RINGS), 0, 6.283); ctx.strokeStyle = `rgba(239,68,68,${.05 + i * .015})`; ctx.lineWidth = DPR; ctx.stroke(); }
+      // líneas radiales
+      for (let i = 0; i < LINES; i++) {
+        const a = (i / LINES) * 6.283 + t * .12;
+        const len = R * (.55 + .45 * Math.abs(Math.sin(i * 1.7 + t * .6)));
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * len, cy + Math.sin(a) * len);
+        ctx.strokeStyle = `rgba(239,68,68,${.06 + .06 * Math.abs(Math.sin(i + t))})`; ctx.lineWidth = DPR; ctx.stroke();
+      }
+      // dots orbitando
+      for (let i = 0; i < DOTS; i++) {
+        const a = t * (.3 + i * .12) + i * 2.1, r = R * (.35 + i * .11);
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, 16 * DPR);
+        g.addColorStop(0, i % 2 ? 'rgba(252,165,165,.9)' : 'rgba(239,68,68,.9)'); g.addColorStop(1, 'rgba(239,68,68,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 16 * DPR, 0, 6.283); ctx.fill();
+      }
+      // núcleo
+      const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * .3);
+      cg.addColorStop(0, 'rgba(252,165,165,.5)'); cg.addColorStop(1, 'rgba(239,68,68,0)');
+      ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, cy, R * .3, 0, 6.283); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+aperture(document.getElementById('aperture'), { lines: 44, scale: .42 });
+const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta, { lines: 30, scale: .5 });
+
+/* headline cinético (palabras suben con blur) */
+(() => {
+  const el = document.querySelector('[data-kinetic]');
+  if (!el) return;
+  const html = el.innerHTML;
+  el.innerHTML = html.replace(/(<[^>]+>)|([^<\s]+)/g, (m, tag, word) => tag ? tag : `<span class="word">${word}</span>`);
+  const words = el.querySelectorAll('.word');
+  if (reduce) return;
+  gsap.set(words, { yPercent: 110, opacity: 0, filter: 'blur(8px)' });
+  gsap.to(words, { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: .9, stagger: .05, ease: 'power3.out', delay: .15 });
+})();
+
+/* reveals */
+(() => {
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '-8%' });
+  document.querySelectorAll('.sec-head,.srv-card,.step,.price-card').forEach(el => { el.setAttribute('data-reveal', ''); io.observe(el); });
+  requestAnimationFrame(() => document.querySelectorAll('[data-reveal]').forEach(el => { if (el.getBoundingClientRect().top < innerHeight * .92) el.classList.add('in'); }));
+})();
+
+/* tilt 3D */
+(() => {
+  if (!fine || reduce) return;
+  document.querySelectorAll('.tilt').forEach(c => {
+    c.addEventListener('pointermove', e => { const r = c.getBoundingClientRect(); c.style.transform = `perspective(700px) rotateX(${((e.clientY - r.top) / r.height - .5) * -6}deg) rotateY(${((e.clientX - r.left) / r.width - .5) * 6}deg) translateY(-4px)`; });
+    c.addEventListener('pointerleave', () => c.style.transform = '');
+  });
+})();
+
+/* magnéticos */
+(() => {
+  if (!fine || reduce) return;
+  document.querySelectorAll('.magnetic').forEach(b => {
+    b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .25}px,${(e.clientY - r.top - r.height / 2) * .35}px)`; });
+    b.addEventListener('pointerleave', () => b.style.transform = '');
+  });
+})();
+
+/* counters */
+(() => {
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; io.unobserve(e.target); const el = e.target, to = +el.dataset.count, suf = el.dataset.suffix || '', money = to >= 1000, t0 = performance.now();
+    (function s(now) { const k = Math.min(1, (now - t0) / 1300), v = Math.round(to * (1 - Math.pow(1 - k, 3))); el.textContent = (money ? v.toLocaleString('en-US') : v) + suf; if (k < 1) requestAnimationFrame(s); })(t0);
+  }), { threshold: .6 });
+  document.querySelectorAll('[data-count]').forEach(el => { if (reduce) { const to = +el.dataset.count; el.textContent = (to >= 1000 ? to.toLocaleString('en-US') : to) + (el.dataset.suffix || ''); } else io.observe(el); });
+})();
+
+/* toolset marquee */
+(() => {
+  const tr = document.getElementById('mqTrack'); if (!tr) return;
+  const tools = ['Figma', 'Illustrator', 'Photoshop', 'After Effects', 'Webflow', 'Framer', 'Blender', 'Lottie', 'Spline', 'InDesign', 'Premiere', 'Notion'];
+  const one = tools.map(t => `<span class="tool">${t}</span>`).join('');
+  tr.innerHTML = one + one;
+  if (reduce) tr.style.animation = 'none';
+})();
+
+/* PROYECTOS — scroll horizontal pinneado */
+(() => {
+  const pin = document.getElementById('prPin'), track = document.getElementById('prTrack');
+  if (!pin || !track || reduce || innerWidth <= 820) return;
+  gsap.to(track, {
+    x: () => -(track.scrollWidth - pin.clientWidth + 50),
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '.proyectos', start: 'top top',
+      end: () => '+=' + (track.scrollWidth - pin.clientWidth + 50),
+      scrub: .6, pin: pin, anticipatePin: 1, invalidateOnRefresh: true
+    }
+  });
+})();

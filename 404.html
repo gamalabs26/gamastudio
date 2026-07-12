@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Esta página no está en el portafolio · GamaStudio</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0508;--color:#EF4444;--light:#FCA5A5;--muted:#94A3B8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--bg);
+  color:#F1F5F9;font-family:'Inter',sans-serif;overflow:hidden}
+canvas{position:fixed;inset:0;z-index:0}.veil{position:fixed;inset:0;z-index:1;background:radial-gradient(70% 60% at 50% 45%,transparent,var(--bg) 82%)}
+main{position:relative;z-index:2;padding:24px;max-width:540px}
+.code{font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(5rem,18vw,10rem);line-height:1;
+  background:linear-gradient(100deg,var(--light),var(--color));-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(1.4rem,4vw,2rem);margin:6px 0 14px}
+p{color:var(--muted);line-height:1.7}
+a{display:inline-block;margin-top:28px;background:linear-gradient(100deg,var(--color),#DC2626);color:#fff;text-decoration:none;
+  font-family:'Outfit',sans-serif;font-weight:600;padding:.9em 1.6em;border-radius:100px;box-shadow:0 10px 34px -12px var(--color)}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas><div class="veil"></div>
+<main>
+  <p class="code">404</p>
+  <h1>Esta página no está en el portafolio</h1>
+  <p>La ruta que buscas no existe. Pero tu próximo proyecto de diseño, sí puede existir.</p>
+  <a href="/gamastudio/">Volver al inicio</a>
+</main>
+<script>
+const cv=document.getElementById('c'),x=cv.getContext('2d');let W,H,P=[];const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight;}addEventListener('resize',rs);rs();
+for(let i=0;i<70;i++)P.push({a:Math.random()*6.28,r:40+Math.random()*Math.min(W,H)*.4,v:.002+Math.random()*.004,s:Math.random()*2+.5});
+(function loop(){x.clearRect(0,0,W,H);x.globalCompositeOperation='lighter';for(const p of P){p.a+=p.v;const px=W/2+Math.cos(p.a)*p.r,py=H/2+Math.sin(p.a)*p.r;x.beginPath();x.arc(px,py,p.s,0,6.28);x.fillStyle='rgba(239,68,68,.7)';x.fill();}if(!reduce)requestAnimationFrame(loop);})();
+</script>
+</body>
+</html>

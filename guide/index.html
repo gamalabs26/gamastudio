@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cómo se construyó · GamaStudio</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0508;--color:#EF4444;--light:#FCA5A5;--muted:#94A3B8;--dim:#475569;--border:rgba(239,68,68,.18)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:#F1F5F9;font-family:'Inter',sans-serif;line-height:1.75;padding:8vh clamp(20px,8vw,120px) 14vh}
+main{max-width:780px;margin:0 auto}
+.mono{font-family:'Outfit',sans-serif}
+.grad{background:linear-gradient(100deg,var(--light),var(--color));-webkit-background-clip:text;background-clip:text;color:transparent}
+.back{display:inline-block;margin-bottom:36px;color:var(--color);font-family:'Outfit',sans-serif;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;text-decoration:none}
+h1{font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.05}
+.sub{font-family:'Outfit',sans-serif;color:var(--color);font-size:.74rem;letter-spacing:.28em;text-transform:uppercase;margin-bottom:12px}
+h2{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.4rem;margin:44px 0 12px;color:var(--light)}
+p,li{color:rgba(241,245,249,.85)}ul{padding-left:22px;margin:10px 0}li{margin:7px 0}
+strong{color:#fff}code{background:rgba(239,68,68,.12);border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-family:'Outfit',sans-serif;font-size:.85em;color:var(--light)}
+a{color:var(--light)}.rule{height:1px;background:var(--border);margin:38px 0}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../">← Volver a GamaStudio</a>
+  <p class="sub mono">Meta · el sitio que se explica a sí mismo</p>
+  <h1>Cómo se construyó <span class="grad">este</span> sitio</h1>
+  <p style="margin-top:18px">GamaStudio es la división creativa de GamaLabs. Este sitio es su propia carta de presentación: lo construyó IA respetando la <strong>identidad real de la marca</strong> y elevándola con scrollytelling y efectos de mouse.</p>
+
+  <h2>Respetamos la marca real</h2>
+  <ul>
+    <li><strong>Logo:</strong> se reusó tal cual la marca de apertura roja del sitio original.</li>
+    <li><strong>Paleta:</strong> rojo <code>#EF4444</code> + salmón <code>#FCA5A5</code> sobre near-black <code>#0A0508</code> — los colores exactos de la marca.</li>
+    <li><strong>Tipografía:</strong> Outfit (display) + Inter (body), las mismas del sitio real.</li>
+    <li><strong>Copy real:</strong> "Diseño estratégico para cada punto de contacto", los 6 servicios, los proyectos y precios reales.</li>
+  </ul>
+
+  <h2>Los efectos (scrollytelling + mouse)</h2>
+  <ul>
+    <li><strong>Hero:</strong> una <em>apertura</em> roja en canvas que ecoa el logo — líneas radiantes y puntos orbitando, reactivos al cursor. Título cinético que sube palabra por palabra con blur.</li>
+    <li><strong>Portafolio:</strong> <em>scroll horizontal pinneado</em> (GSAP) — los proyectos se deslizan en X mientras bajas; cada card con tilt 3D.</li>
+    <li><strong>Global:</strong> cursor personalizado que crece sobre lo interactivo, luz que sigue al mouse, botones magnéticos, marquee de herramientas y contadores.</li>
+  </ul>
+
+  <h2>Stack</h2>
+  <p>HTML/CSS/JS vanilla + GSAP/ScrollTrigger. Cero imágenes generadas — los proyectos son cards diseñadas (fiel al sitio original). Todo respeta <code>prefers-reduced-motion</code> y funciona en móvil. Hosting en GitHub Pages.</p>
+
+  <div class="rule"></div>
+  <p class="mono" style="color:var(--dim);font-size:.82rem">¿Quieres uno así para tu marca? <a href="../#contacto">Cuéntanos tu proyecto →</a></p>
+</main>
+</body>
+</html>

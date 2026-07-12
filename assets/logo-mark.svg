@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" fill="none">
+<circle cx="22" cy="22" r="13" fill="#EF4444" fill-opacity="0.3"/>
+<line x1="22" y1="22" x2="22" y2="9" stroke="#EF4444" stroke-width="1.1" stroke-linecap="round" opacity="0.6"/>
+<line x1="22" y1="22" x2="35" y2="22" stroke="#EF4444" stroke-width="1.1" stroke-linecap="round" opacity="0.55"/>
+<line x1="22" y1="22" x2="22" y2="35" stroke="#EF4444" stroke-width="1.1" stroke-linecap="round" opacity="0.35"/>
+<line x1="22" y1="22" x2="9" y2="22" stroke="#EF4444" stroke-width="1.1" stroke-linecap="round" opacity="0.35"/>
+<circle cx="22" cy="9" r="3" fill="#EF4444" opacity="0.9"/>
+<circle cx="35" cy="22" r="2.8" fill="#EF4444" opacity="0.8"/>
+<circle cx="22" cy="22" r="5" fill="#EF4444" opacity="0.7"/>
+<circle cx="22" cy="22" r="3.3" fill="#FCA5A5"/>
+</svg>
