@@ -80,7 +80,7 @@ function aperture(canvas, opts = {}) {
   }
   requestAnimationFrame(frame);
 }
-aperture(document.getElementById('aperture'), { lines: 44, scale: .42 });
+const apHero = document.getElementById('aperture'); if (apHero) aperture(apHero, { lines: 44, scale: .42 });
 const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta, { lines: 30, scale: .5 });
 
 /* headline cinético (palabras suben con blur) — sin romper el span de gradiente */
@@ -160,4 +160,75 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
       scrub: .6, pin: pin, anticipatePin: 1, invalidateOnRefresh: true
     }
   });
+})();
+
+/* ---- HERO: campo 3D de sitios reales (parallax + deriva) ---- */
+(() => {
+  const field = document.getElementById('field'); if (!field) return;
+  const IMGS = ['helios','anima','palacio','copal','niebla','cumbre','pigmento','plasma','minutero','obtura','anden','vialactea'];
+  const SPOTS = [[4,16,.9],[13,60,.55],[1,40,.35],[20,4,.5],[7,83,.72],[24,38,.32],[80,10,.5],[90,58,.85],[74,82,.6],[95,32,.38],[84,46,.32],[70,26,.45]];
+  const cards = SPOTS.map(([x, y, d], i) => {
+    const c = document.createElement('div'); c.className = 'fcard';
+    const w = 90 + d * 132;
+    c.style.cssText = `left:${x}%;top:${y}%;width:${w}px;height:${Math.round(w * .62)}px;filter:blur(${((1 - d) * 3).toFixed(1)}px) brightness(${(.5 + d * .5).toFixed(2)});z-index:${Math.round(d * 10)}`;
+    c.innerHTML = `<img src="assets/work/${IMGS[i % IMGS.length]}.jpg" alt="" loading="eager">`;
+    c._d = d; c._ph = i * 1.7; field.appendChild(c);
+    setTimeout(() => c.style.opacity = (.32 + d * .5).toFixed(2), 350 + i * 80);
+    return c;
+  });
+  let tmx = .5, tmy = .5, mx = .5, my = .5;
+  if (fine) addEventListener('pointermove', e => { tmx = e.clientX / innerWidth; tmy = e.clientY / innerHeight; }, { passive: true });
+  const t0 = performance.now();
+  (function loop(now) {
+    mx += (tmx - mx) * .06; my += (tmy - my) * .06;
+    const t = reduce ? 0 : (now - t0) / 1000;
+    for (const c of cards) {
+      const dx = (mx - .5) * -c._d * 46 + (reduce ? 0 : Math.sin(t * .3 + c._ph) * 8 * c._d);
+      const dy = (my - .5) * -c._d * 46 + (reduce ? 0 : Math.cos(t * .25 + c._ph) * 8 * c._d);
+      c.style.transform = `translate3d(${dx.toFixed(1)}px,${dy.toFixed(1)}px,0)`;
+    }
+    requestAnimationFrame(loop);
+  })(performance.now());
+})();
+
+/* ---- HERO: el navegador que se construye solo ---- */
+(() => {
+  const builder = document.getElementById('builder'), site = document.getElementById('site');
+  if (!builder || !site || typeof gsap === 'undefined') return;
+  const bwUrl = document.getElementById('bwUrl'), bwStatus = document.getElementById('bwStatus'),
+    sImg = document.getElementById('sImg'), tint = document.getElementById('tint'), bcur = document.getElementById('bcursor');
+  const boxes = gsap.utils.toArray('#site .s-box');
+  const fills = '#site .fill, #site .s-h1, #site .s-h2, #site .s-btn';
+  const SITES = [['cepa','gamastudio.mx/cepa'],['vialactea','gamastudio.mx/vialactea'],['obtura','gamastudio.mx/obtura'],['palacio','gamastudio.mx/palacio'],['helios','gamastudio.mx/helios']];
+  if (fine && !reduce) {
+    const bw = builder.querySelector('.bw');
+    builder.addEventListener('pointermove', e => { const r = builder.getBoundingClientRect(); bw.style.transform = `rotateY(${((e.clientX - r.left) / r.width - .5) * 7}deg) rotateX(${((e.clientY - r.top) / r.height - .5) * -7}deg)`; });
+    builder.addEventListener('pointerleave', () => bw.style.transform = '');
+  }
+  if (reduce) { gsap.set(fills, { opacity: 1 }); gsap.set(sImg, { opacity: 1 }); gsap.set(boxes, { borderColor: 'rgba(255,255,255,.07)' }); site.classList.add('built'); bwStatus.textContent = 'publicado ✓'; return; }
+  let idx = 0, vis = true;
+  new IntersectionObserver(e => vis = e[0].isIntersecting).observe(builder);
+  function build() {
+    if (!vis || document.hidden) { setTimeout(build, 700); return; }
+    const [slug, url] = SITES[idx % SITES.length]; idx++;
+    site.classList.remove('built');
+    const tl = gsap.timeline({ onComplete: () => setTimeout(build, 2400) });
+    tl.add(() => bwStatus.textContent = 'construyendo…')
+      .set(boxes, { scaleX: 0, transformOrigin: 'left center', borderColor: 'rgba(239,68,68,.55)', opacity: 1 })
+      .set(fills, { opacity: 0 }).set(sImg, { opacity: 0 }).set(tint, { opacity: 0 }).set(bcur, { opacity: 0 })
+      .to(boxes, { scaleX: 1, duration: .5, stagger: .05, ease: 'power2.out' })
+      .add(() => sImg.src = 'assets/work/' + slug + '.jpg')
+      .to(sImg, { opacity: 1, duration: .5 }, '+=.05')
+      .add(() => { site.classList.add('built'); bwUrl.textContent = url; })
+      .to(fills, { opacity: 1, duration: .45, stagger: .035 }, '<')
+      .to(boxes, { borderColor: 'rgba(255,255,255,.07)', duration: .4 }, '<')
+      .fromTo(tint, { opacity: .55, xPercent: -35 }, { opacity: 0, xPercent: 35, duration: .7, ease: 'power1.inOut' })
+      .add(() => bwStatus.textContent = 'publicado ✓')
+      .set(bcur, { opacity: 1, left: '55%', top: '42%' })
+      .add(() => { const b = document.querySelector('.s-btn').getBoundingClientRect(), body = document.querySelector('.bw-body').getBoundingClientRect(); gsap.to(bcur, { left: b.left + b.width / 2 - body.left, top: b.top + b.height / 2 - body.top, duration: .5, ease: 'power2.inOut' }); })
+      .to({}, { duration: .55 })
+      .to('.s-btn', { scale: .93, duration: .1, yoyo: true, repeat: 1, transformOrigin: 'center' })
+      .to(bcur, { opacity: 0, duration: .3 }, '+=.15');
+  }
+  build();
 })();

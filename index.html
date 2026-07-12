@@ -36,23 +36,51 @@
 
 <main id="top">
 
-  <!-- HERO -->
+  <!-- HERO combo: campo 3D de sitios + navegador que se construye solo -->
   <section class="hero" id="hero">
-    <canvas class="aperture" id="aperture" aria-hidden="true"></canvas>
+    <div class="field" id="field" aria-hidden="true"></div>
     <div class="hero-veil" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <p class="eyebrow">DIVISIÓN CREATIVA DE GAMALABS</p>
-      <h1 class="hero-title" data-kinetic>Diseño estratégico para<br>cada <span class="grad">punto de contacto</span>.</h1>
-      <p class="hero-sub">Creamos identidades de marca, interfaces digitales y experiencias visuales que hacen que tu negocio sea <strong>memorable y diferente</strong>.</p>
-      <div class="hero-cta">
-        <a class="btn btn-cta magnetic" href="#contacto">Cuéntanos tu proyecto <span class="arr">→</span></a>
-        <a class="btn btn-ghost" href="#proyectos">Ver portafolio</a>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">DIVISIÓN CREATIVA DE GAMALABS</p>
+        <h1 class="hero-title" data-kinetic>Diseño estratégico para<br>cada <span class="grad">punto de contacto</span>.</h1>
+        <p class="hero-sub">No solo diseñamos. <strong>Construimos</strong> identidades, interfaces y sitios web que hacen memorable a tu negocio.</p>
+        <div class="hero-cta">
+          <a class="btn btn-cta magnetic" href="#contacto">Cuéntanos tu proyecto <span class="arr">→</span></a>
+          <a class="btn btn-ghost" href="#proyectos">Ver portafolio</a>
+        </div>
+        <div class="hero-stats">
+          <div><span class="hs-n" data-count="120" data-suffix="+">0</span><span class="hs-l">proyectos</span></div>
+          <div><span class="hs-n" data-count="60" data-suffix="+">0</span><span class="hs-l">marcas</span></div>
+          <div><span class="hs-n" data-count="82" data-suffix="%">0</span><span class="hs-l">+ conversión</span></div>
+          <div><span class="hs-n">5★</span><span class="hs-l">promedio</span></div>
+        </div>
       </div>
-      <div class="hero-stats">
-        <div><span class="hs-n" data-count="120" data-suffix="+">0</span><span class="hs-l">proyectos de diseño</span></div>
-        <div><span class="hs-n" data-count="60" data-suffix="+">0</span><span class="hs-l">marcas construidas</span></div>
-        <div><span class="hs-n" data-count="82" data-suffix="%">0</span><span class="hs-l">más conversión (rediseños)</span></div>
-        <div><span class="hs-n">5★</span><span class="hs-l">calificación promedio</span></div>
+      <div class="builder" id="builder" aria-hidden="true">
+        <div class="bw">
+          <div class="bw-bar"><span class="bd r"></span><span class="bd"></span><span class="bd"></span><span class="bw-url" id="bwUrl">gamastudio.mx</span><span class="bw-status" id="bwStatus">construyendo…</span></div>
+          <div class="bw-body">
+            <div class="site" id="site">
+              <div class="s-nav">
+                <span class="s-box s-logo"><i class="fill"></i></span>
+                <span class="s-box s-link"><i class="fill"></i></span>
+                <span class="s-box s-link"><i class="fill"></i></span>
+                <span class="s-box s-cta"><i class="fill"></i></span>
+              </div>
+              <div class="s-box s-hero">
+                <img class="s-img" id="sImg" src="assets/work/cepa.jpg" alt="" aria-hidden="true">
+                <span class="s-h1"></span><span class="s-h2"></span><span class="s-btn"></span>
+              </div>
+              <div class="s-cards">
+                <span class="s-box s-card"><i class="fill"></i></span>
+                <span class="s-box s-card"><i class="fill"></i></span>
+                <span class="s-box s-card"><i class="fill"></i></span>
+              </div>
+            </div>
+            <div class="tint" id="tint"></div>
+            <div class="bcursor" id="bcursor">➤</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="hero-scrollcue" aria-hidden="true"><span>desliza</span><i></i></div>
