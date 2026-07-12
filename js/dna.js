@@ -13,15 +13,14 @@
   const ctx = canvas.getContext('2d');
   if (reduce || !ctx) { section.classList.add('dna-nogl'); window.__ACT1P = 0; return; }
 
-  const N = 149, TRANS = 61, PAD = 'assets/dna/frames/';
+  const N = 88, PAD = 'assets/dna/frames/';           // solo rotación FRONTAL (el ADN empieza de frente)
   const dpr = Math.min(devicePixelRatio || 1, 2);
   const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const clamp = x => Math.max(0, Math.min(1, x));
 
-  /* línea de tiempo (p sobre toda la sección) */
-  const FRAME_START = 0.24, FRAME_SPAN = 0.72;        // el ADN se scrubea de p=0.24 a 0.96
-  const transEndDp = (TRANS - 1) / (N - 1);
-  const frontP = FRAME_START + transEndDp * FRAME_SPAN; // p donde llegamos a la vista frontal (~0.53)
+  /* línea de tiempo (p sobre toda la sección) — entrada por MORPH de partículas, sin zoom/fade */
+  const MAT = 0.30;                                    // punto de materialización (partículas → ADN fotorreal)
+  const FRAME_START = MAT, FRAME_SPAN = 0.66;          // el ADN (ya de frente) gira de p=0.30 a 0.96
 
   /* precarga de frames */
   const imgs = new Array(N + 1); let loaded = 0, ready = false, curImg = null;
@@ -56,7 +55,7 @@
   const overlay = section.querySelector('.hero-overlay');
   const cue = document.getElementById('heroCue');
   const flash = document.getElementById('dnaFlash');
-  const CST = frontP + 0.02, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);
+  const CST = MAT + 0.08, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);   // cards arrancan tras materializar
   function updateCards(p) {
     const cp = clamp((p - CST) / (0.985 - CST));
     const Xmax = Math.min(innerWidth * 0.30, 360), Ymax = innerHeight * 0.34;
@@ -76,12 +75,12 @@
   function apply(p) {
     window.__ACT1P = p;                                   // lo leen las partículas (hero3d.js)
     if (ready) renderFrame((p - FRAME_START) / FRAME_SPAN);
-    canvas.style.opacity = sstep(0.15, 0.26, p).toFixed(3);           // el ADN APARECE mientras las partículas vuelan
-    canvas.style.transform = `scale(${(1 + 0.16 * (1 - sstep(0.15, 0.34, p))).toFixed(3)})`;  // dive: zoom-out al entrar
-    if (flash) flash.style.opacity = (sstep(0.16, 0.24, p) * (1 - sstep(0.24, 0.35, p))).toFixed(3);  // túnel de luz
-    if (overlay) overlay.style.opacity = (1 - sstep(0.09, 0.16, p)).toFixed(3);     // texto de bienvenida se va en el dive
-    if (cue) cue.style.opacity = (1 - clamp(p / 0.06)).toFixed(3);
-    if (intro) intro.style.opacity = (sstep(frontP - 0.10, frontP - 0.02, p) * (1 - sstep(frontP + 0.03, frontP + 0.13, p))).toFixed(3);
+    // materialización: el ADN fotorreal aparece RÁPIDO justo en el pico del destello (no fade lento, no zoom)
+    canvas.style.opacity = sstep(MAT - 0.02, MAT + 0.03, p).toFixed(3);
+    if (flash) flash.style.opacity = (sstep(MAT - 0.06, MAT, p) * (1 - sstep(MAT, MAT + 0.08, p))).toFixed(3);  // destello que tapa la costura
+    if (overlay) overlay.style.opacity = (1 - sstep(0.08, 0.15, p)).toFixed(3);     // bienvenida se va al iniciar el morph
+    if (cue) cue.style.opacity = (1 - clamp(p / 0.05)).toFixed(3);
+    if (intro) intro.style.opacity = (sstep(MAT + 0.02, MAT + 0.08, p) * (1 - sstep(MAT + 0.10, MAT + 0.18, p))).toFixed(3);
     updateCards(p);
   }
 
