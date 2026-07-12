@@ -3,6 +3,16 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(pointer: fine)').matches;
 gsap.registerPlugin(ScrollTrigger);
 
+/* ---- inyectar previews reales de sitios (portafolio) ---- */
+(() => {
+  const NAMES = { cepa:'CEPA', vialactea:'VÍA LÁCTEA', obtura:'OBTURA', anden:'ANDÉN', anima:'ÁNIMA', helios:'HELIOS', palacio:'CINE PALACIO', copal:'CASA COPAL', niebla:'NIEBLA', minutero:'MINUTERO', neon:'NÉON', cumbre:'CUMBRE', meridiano:'MERIDIANO', lazaro:'LÁZARO', automata:'AUTÓMATA', helice:'HÉLICE', volta:'VOLTA', vivero:'VIVERO', plasma:'PLASMA', vertice:'VÉRTICE', nauta:'NAUTA', miga:'MIGA', noctambula:'NOCTÁMBULA', pigmento:'PIGMENTO', sumi:'SUMI', madrugada:'MADRUGADA', grado:'GRADO', reticula:'RETÍCULA', ruido:'RUIDO', modula:'MODULA', pulso:'PULSO', enjambre:'ENJAMBRE', gravedad:'GRAVEDAD', canon:'CANON', oraculo:'ORÁCULO', vitrea:'VÍTREA', faro:'FARO' };
+  const FEATURED = [['cepa','Landing cinemática'],['vialactea','Scrollytelling'],['obtura','Producto interactivo'],['helios','WebGL · shader'],['anima','Showcase 3D'],['palacio','Experiencia Art Déco'],['anden','Scroll narrativo'],['copal','Lujo editorial'],['niebla','Video hero'],['minutero','Zoom infinito'],['cumbre','Scroll ascendente'],['pigmento','Fluidos WebGL']];
+  const ALL = ['cepa','obtura','vialactea','anden','anima','helios','palacio','copal','niebla','minutero','neon','cumbre','meridiano','lazaro','automata','helice','volta','vivero','plasma','vertice','nauta','miga','noctambula','pigmento','sumi','madrugada','grado','reticula','ruido','modula','pulso','enjambre','gravedad','canon','oraculo','vitrea','faro'];
+  const track = document.getElementById('prTrack'), gal = document.getElementById('galGrid');
+  if (track) track.innerHTML = FEATURED.map(([s, t]) => `<article class="work-card tilt"><div class="wc-bar"><span class="wc-dot r"></span><span class="wc-dot"></span><span class="wc-dot"></span><span class="wc-url">gamastudio.mx/${s}</span></div><div class="wc-shot"><img src="assets/work/${s}.jpg" alt="Sitio ${NAMES[s]}" loading="lazy"></div><div class="wc-meta"><span class="wc-name">${NAMES[s]}</span><span class="wc-type">${t}</span></div></article>`).join('');
+  if (gal) gal.innerHTML = ALL.map(s => `<div class="gal-item"><img src="assets/work/${s}.jpg" alt="${NAMES[s]}" loading="lazy"><span class="gi-name">${NAMES[s]}</span></div>`).join('');
+})();
+
 /* cursor custom + glow */
 (() => {
   if (!fine) return;
@@ -88,7 +98,7 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
 /* reveals */
 (() => {
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '-8%' });
-  document.querySelectorAll('.sec-head,.srv-card,.step,.price-card').forEach(el => { el.setAttribute('data-reveal', ''); io.observe(el); });
+  document.querySelectorAll('.sec-head,.srv-card,.step,.price-card,.gal-item').forEach(el => { el.setAttribute('data-reveal', ''); io.observe(el); });
   requestAnimationFrame(() => document.querySelectorAll('[data-reveal]').forEach(el => { if (el.getBoundingClientRect().top < innerHeight * .92) el.classList.add('in'); }));
 })();
 
