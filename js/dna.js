@@ -1,28 +1,22 @@
-/* ==== GAMASTUDIO — ACTO 1: hero partículas → dive-in → ADN (una sola secuencia) ====
-   Controlador único. Lee el progreso de la sección (#proceso/.act1) por geometría real y orquesta:
-   - las partículas del logo (hero3d.js las lee de window.__ACT1P): ícono→wordmark→dive-in
-   - el ADN fotorreal (frames Seedance) que APARECE por debajo mientras las partículas vuelan (dive)
-   - túnel de luz (flash) + el ADN entra en vista AXIAL (la "O") y rota a FRONTAL
-   - las 7 cards del proceso que VIAJAN por el ADN (abajo-izq → centro → arriba-der).
-   Todo en un mismo stage fijo → es adentrarse, no cambiar de sección. */
+/* ==== GAMASTUDIO — ACTO 1: secuencia cinematográfica Seedance scrubeada con el scroll ====
+   Todo el visual es VIDEO (Codex + Seedance), NO canvas/partículas/matemática. El scroll
+   reproduce cuadro a cuadro: (1) aparece "GamaStudio" → (2) morph a ícono → (3) dive-in de
+   partículas → (4) ADN de frente que gira. Encima, overlays HTML (copy + cards del proceso).
+   Frames: 1–49 palabra→ícono · 49–110 ícono→ADN (dive) · 110–198 rotación del ADN. */
 (() => {
   const section = document.getElementById('proceso');
   const canvas = document.getElementById('dnaCanvas');
   if (!section || !canvas) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ctx = canvas.getContext('2d');
-  if (reduce || !ctx) { section.classList.add('dna-nogl'); window.__ACT1P = 0; return; }
+  if (reduce || !ctx) { section.classList.add('dna-nogl'); return; }
 
-  const N = 88, PAD = 'assets/dna/frames/';           // solo rotación FRONTAL (el ADN empieza de frente)
+  const N = 198, PAD = 'assets/dna/frames/';
+  const A_END = 0.24, DIVE_END = 0.54;                 // hitos: fin palabra→ícono · fin ícono→ADN
   const dpr = Math.min(devicePixelRatio || 1, 2);
   const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const clamp = x => Math.max(0, Math.min(1, x));
 
-  /* línea de tiempo (p sobre toda la sección) — entrada por MORPH de partículas, sin zoom/fade */
-  const MAT = 0.30;                                    // punto de materialización (partículas → ADN fotorreal)
-  const FRAME_START = MAT, FRAME_SPAN = 0.66;          // el ADN (ya de frente) gira de p=0.30 a 0.96
-
-  /* precarga de frames */
   const imgs = new Array(N + 1); let loaded = 0, ready = false, curImg = null;
   function drawCover(img) {
     if (!img || !img.complete || !img.naturalWidth) return; curImg = img;
@@ -38,24 +32,23 @@
   addEventListener('resize', resize); resize();
   for (let i = 1; i <= N; i++) {
     const im = new Image();
-    im.onload = () => { loaded++; if (!ready && (loaded > 6 || i === 1)) { ready = true; resize(); } };
+    im.onload = () => { loaded++; if (!ready && (loaded > 4 || i === 1)) { ready = true; resize(); } };
     im.src = `${PAD}f_${String(i).padStart(3, '0')}.jpg`;
     imgs[i] = im;
   }
-  function renderFrame(dp) {
-    const idx = 1 + Math.round(clamp(dp) * (N - 1)), im = imgs[idx];
+  function renderFrame(p) {
+    const fp = clamp((p - 0.02) / 0.94), idx = 1 + Math.round(fp * (N - 1)), im = imgs[idx];
     if (im && im.complete && im.naturalWidth) drawCover(im);
     else for (let d = 1; d < N; d++) { const a = imgs[idx - d], b = imgs[idx + d]; if (a && a.complete) { drawCover(a); break; } if (b && b.complete) { drawCover(b); break; } }
   }
 
-  /* cards que VIAJAN por el ADN */
+  /* cards que VIAJAN por el ADN: abajo-izq → grande al centro → arriba-der */
   const cards = Array.from(section.querySelectorAll('.dna-card'));
   const nCards = cards.length || 1;
   const intro = section.querySelector('.dna-intro');
   const overlay = section.querySelector('.hero-overlay');
   const cue = document.getElementById('heroCue');
-  const flash = document.getElementById('dnaFlash');
-  const CST = MAT + 0.08, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);   // cards arrancan tras materializar
+  const CST = DIVE_END + 0.04, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);
   function updateCards(p) {
     const cp = clamp((p - CST) / (0.985 - CST));
     const Xmax = Math.min(innerWidth * 0.30, 360), Ymax = innerHeight * 0.34;
@@ -73,18 +66,25 @@
   }
 
   function apply(p) {
-    window.__ACT1P = p;                                   // lo leen las partículas (hero3d.js)
-    if (ready) renderFrame((p - FRAME_START) / FRAME_SPAN);
-    // materialización: el ADN fotorreal aparece RÁPIDO justo en el pico del destello (no fade lento, no zoom)
-    canvas.style.opacity = sstep(MAT - 0.02, MAT + 0.03, p).toFixed(3);
-    if (flash) flash.style.opacity = (sstep(MAT - 0.06, MAT, p) * (1 - sstep(MAT, MAT + 0.08, p))).toFixed(3);  // destello que tapa la costura
-    if (overlay) overlay.style.opacity = (1 - sstep(0.08, 0.15, p)).toFixed(3);     // bienvenida se va al iniciar el morph
+    if (ready) renderFrame(p);
+    // copy del hero: presente al inicio, se desliza y sale mientras la palabra se deshace (movimiento, no zoom)
+    if (overlay) {
+      const g = sstep(0.02, 0.14, p);
+      overlay.style.opacity = (1 - g).toFixed(3);
+      overlay.style.transform = `translateX(-50%) translateY(${(g * 70).toFixed(0)}px)`;
+      overlay.style.pointerEvents = g > 0.5 ? 'none' : 'auto';
+    }
     if (cue) cue.style.opacity = (1 - clamp(p / 0.05)).toFixed(3);
-    if (intro) intro.style.opacity = (sstep(MAT + 0.02, MAT + 0.08, p) * (1 - sstep(MAT + 0.10, MAT + 0.18, p))).toFixed(3);
+    // intro del proceso: entra cuando el ADN ya está de frente, antes de las cards
+    if (intro) {
+      const io = sstep(DIVE_END - 0.02, DIVE_END + 0.04, p) * (1 - sstep(CST - 0.02, CST + 0.05, p));
+      intro.style.opacity = io.toFixed(3);
+      intro.style.transform = `translateX(-50%) translateY(${((1 - io) * 18).toFixed(0)}px)`;
+    }
     updateCards(p);
   }
 
-  /* progreso desde la geometría real (inmune a pins) + loop rAF suavizado */
+  /* progreso desde la geometría real del sticky + loop rAF suavizado */
   function calcProg() {
     const rect = section.getBoundingClientRect();
     const total = Math.max(1, section.offsetHeight - innerHeight);
