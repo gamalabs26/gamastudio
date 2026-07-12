@@ -114,8 +114,8 @@ body.pointer-fine .cursor-glow{opacity:.6}
 /* --- ACTO 1 · hero partículas → dive-in → ADN (una secuencia, un stage fijo) --- */
 .act1{position:relative;height:840vh;background:radial-gradient(120% 60% at 50% 42%,#140a1c,var(--bg) 72%)}
 .act1-stage{position:sticky;top:0;height:100svh;overflow:hidden}
-.dna-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:block;
-  background:#0A0508 url(../assets/dna/frames/f_001.jpg) center/cover no-repeat}
+.dna-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:block;opacity:0;background:#0A0508}
+.logo3d{position:absolute;inset:0;width:100%;height:100%;z-index:2;display:block}
 .act1 .hero-veil{position:absolute;inset:0;z-index:3;pointer-events:none;
   background:radial-gradient(62% 52% at 50% 42%,transparent,rgba(10,5,8,.4) 76%,var(--bg))}
 .act1 .hero-overlay{position:absolute;left:50%;bottom:clamp(60px,11vh,120px);transform:translateX(-50%);

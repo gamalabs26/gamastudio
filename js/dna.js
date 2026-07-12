@@ -11,8 +11,9 @@
   const ctx = canvas.getContext('2d');
   if (reduce || !ctx) { section.classList.add('dna-nogl'); return; }
 
-  const N = 198, PAD = 'assets/dna/frames/';
-  const A_END = 0.24, DIVE_END = 0.54;                 // hitos: fin palabra→ícono · fin ícono→ADN
+  const N = 149, PAD = 'assets/dna/frames/';           // 1–61 dive ícono→ADN · 61–149 rotación del ADN
+  const F0 = 0.15, FSPAN = 0.83;                        // el video (Seedance) arranca tras el morph de partículas (p=0.15)
+  const FRONT = F0 + FSPAN * (60 / (N - 1));            // p donde el ADN queda de frente (~0.49)
   const dpr = Math.min(devicePixelRatio || 1, 2);
   const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const clamp = x => Math.max(0, Math.min(1, x));
@@ -37,7 +38,7 @@
     imgs[i] = im;
   }
   function renderFrame(p) {
-    const fp = clamp((p - 0.02) / 0.94), idx = 1 + Math.round(fp * (N - 1)), im = imgs[idx];
+    const fp = clamp((p - F0) / FSPAN), idx = 1 + Math.round(fp * (N - 1)), im = imgs[idx];
     if (im && im.complete && im.naturalWidth) drawCover(im);
     else for (let d = 1; d < N; d++) { const a = imgs[idx - d], b = imgs[idx + d]; if (a && a.complete) { drawCover(a); break; } if (b && b.complete) { drawCover(b); break; } }
   }
@@ -48,7 +49,7 @@
   const intro = section.querySelector('.dna-intro');
   const overlay = section.querySelector('.hero-overlay');
   const cue = document.getElementById('heroCue');
-  const CST = DIVE_END + 0.04, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);
+  const CST = FRONT + 0.05, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);   // cards tras quedar el ADN de frente
   function updateCards(p) {
     const cp = clamp((p - CST) / (0.985 - CST));
     const Xmax = Math.min(innerWidth * 0.30, 360), Ymax = innerHeight * 0.34;
@@ -66,6 +67,8 @@
   }
 
   function apply(p) {
+    window.__ACT1P = p;                                  // lo leen las partículas del logo (hero3d.js)
+    canvas.style.opacity = sstep(0.14, 0.16, p).toFixed(3);   // el video (ícono de partículas → ADN) toma la escena tras el morph
     if (ready) renderFrame(p);
     // copy del hero: presente al inicio, se desliza y sale mientras la palabra se deshace (movimiento, no zoom)
     if (overlay) {
@@ -77,7 +80,7 @@
     if (cue) cue.style.opacity = (1 - clamp(p / 0.05)).toFixed(3);
     // intro del proceso: entra cuando el ADN ya está de frente, antes de las cards
     if (intro) {
-      const io = sstep(DIVE_END - 0.02, DIVE_END + 0.04, p) * (1 - sstep(CST - 0.02, CST + 0.05, p));
+      const io = sstep(FRONT - 0.03, FRONT + 0.02, p) * (1 - sstep(CST - 0.02, CST + 0.05, p));
       intro.style.opacity = io.toFixed(3);
       intro.style.transform = `translateX(-50%) translateY(${((1 - io) * 18).toFixed(0)}px)`;
     }

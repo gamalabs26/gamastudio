@@ -1,4 +1,7 @@
-/* ==== GAMASTUDIO — hero: ícono grande → (scroll) morph a "GamaStudio" en partículas ==== */
+/* ==== GAMASTUDIO — partículas del logo: "GamaStudio" (wordmark) → (scroll) morphea al ÍCONO ====
+   Canvas de utilidad (morph del logo + mouse-over), NO un visual cinematográfico. Al terminar el
+   morph, el ícono de partículas se congela y el video Seedance (que arranca justo de ese cuadro)
+   toma la escena para el dive al ADN. Progreso compartido vía window.__ACT1P (lo pone dna.js). */
 (() => {
   const canvas = document.getElementById('logo3d');
   const fallback = document.querySelector('.logo-fallback');
@@ -7,7 +10,6 @@
   const testGL = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   const bail = () => { canvas.style.display = 'none'; if (fallback) fallback.style.display = 'block'; };
   if (reduce || !testGL || typeof THREE === 'undefined') { bail(); return; }
-  // el progreso lo maneja el controlador único (dna.js) vía window.__ACT1P; aquí solo pintamos partículas
   const ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
   const ICON = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 4 44 44' width='440' height='440'>
@@ -33,23 +35,23 @@
   iconImg.onload = () => ((document.fonts && document.fonts.ready) || Promise.resolve()).then(() => { try { start(iconImg); } catch (e) { bail(); } });
   iconImg.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(ICON);
 
-  function samplePts(ctx, W, H, unit, sx = 0, sy = 0) {
+  function samplePts(ctx, W, H, unit) {
     const data = ctx.getImageData(0, 0, W, H).data, pts = [];
     for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) {
       const i = (y * W + x) * 4; if (data[i + 3] < 110) continue;
       const r = data[i], g = data[i + 1], b = data[i + 2]; if (Math.max(r, g, b) < 72) continue;
-      pts.push([(x - W / 2) / unit + sx, -(y - H / 2) / unit + sy, r / 255, g / 255, b / 255]);
+      pts.push([(x - W / 2) / unit, -(y - H / 2) / unit, r / 255, g / 255, b / 255]);
     }
     return pts;
   }
 
   function start(iconImg) {
-    /* estado A: ÍCONO grande (cuadrado) */
+    /* estado ÍCONO (cuadrado) */
     const IS = 440, ic = document.createElement('canvas'); ic.width = ic.height = IS;
     ic.getContext('2d').drawImage(iconImg, 0, 0, IS, IS);
     const iconPts = samplePts(ic.getContext('2d'), IS, IS, IS / 2 / 1.3);
 
-    /* estado B: WORDMARK "GamaStudio" + "CREATIVE DESIGN" (ancho) */
+    /* estado WORDMARK "GamaStudio" + "CREATIVE DESIGN" (ancho) */
     const WW = 1160, WH = 360, wc = document.createElement('canvas'); wc.width = WW; wc.height = WH;
     const g = wc.getContext('2d'); g.textAlign = 'center'; g.textBaseline = 'alphabetic';
     g.font = '900 150px Inter, Arial, sans-serif';
@@ -60,7 +62,6 @@
     g.font = '600 30px Inter, Arial, sans-serif'; g.fillStyle = '#9aa7b8'; g.fillText('CREATIVE DESIGN', WW / 2, yT + 62);
     const wordPts = samplePts(g, WW, WH, WH / 2 / 0.8);
 
-    /* atributos morphables (N = el mayor, ciclando el menor) */
     const iL = iconPts.length, wL = wordPts.length, N = Math.max(iL, wL);
     const aIcon = new Float32Array(N * 3), aWord = new Float32Array(N * 3), aRand = new Float32Array(N * 3),
       aCI = new Float32Array(N * 3), aCW = new Float32Array(N * 3), aSize = new Float32Array(N);
@@ -75,69 +76,44 @@
       aSize[i] = 1.5 + Math.random() * 2.3;
     }
 
-    /* estado C: DOBLE HÉLICE de frente (para el morph cinematográfico → ADN fotorreal) */
-    const aDNA = new Float32Array(N * 3), aCDNA = new Float32Array(N * 3);
-    const RED = [0.937, 0.267, 0.267], REDL = [0.988, 0.647, 0.647], VIO = [0.545, 0.361, 0.965], VIOL = [0.655, 0.545, 0.980];
-    const HR = 1.3, HH = 2.6, HT = 3.0;   // radio, media-altura, vueltas
-    for (let i = 0; i < N; i++) {
-      if (i % 6 === 5) {                    // ~1/6 de puntos = peldaños
-        const t = i / (N - 1), ang = t * HT * Math.PI * 2, u = (i * 2654435761 % 1000) / 1000;
-        const ax = Math.cos(ang) * HR, az = Math.sin(ang) * HR, bx = -ax, bz = -az;
-        aDNA[i*3] = ax + (bx-ax)*u; aDNA[i*3+1] = (t-0.5)*2*HH; aDNA[i*3+2] = az + (bz-az)*u;
-        aCDNA[i*3] = RED[0]+(VIO[0]-RED[0])*u; aCDNA[i*3+1] = RED[1]+(VIO[1]-RED[1])*u; aCDNA[i*3+2] = RED[2]+(VIO[2]-RED[2])*u;
-      } else {
-        const strand = i % 2, t = i / (N - 1), ang = t * HT * Math.PI * 2 + strand * Math.PI;
-        aDNA[i*3] = Math.cos(ang)*HR; aDNA[i*3+1] = (t-0.5)*2*HH; aDNA[i*3+2] = Math.sin(ang)*HR;
-        const b = strand ? VIO : RED, l = strand ? VIOL : REDL, k = 0.5 + 0.5*Math.sin(ang*2);
-        aCDNA[i*3] = b[0]+(l[0]-b[0])*k; aCDNA[i*3+1] = b[1]+(l[1]-b[1])*k; aCDNA[i*3+2] = b[2]+(l[2]-b[2])*k;
-      }
-    }
-
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.6));
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, 1, .1, 100); camera.position.z = 8;
 
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(aIcon.slice(), 3));
+    geo.setAttribute('position', new THREE.BufferAttribute(aWord.slice(), 3));   // arranca en el wordmark
     geo.setAttribute('aIcon', new THREE.BufferAttribute(aIcon, 3));
     geo.setAttribute('aWord', new THREE.BufferAttribute(aWord, 3));
     geo.setAttribute('aRand', new THREE.BufferAttribute(aRand, 3));
     geo.setAttribute('aCI', new THREE.BufferAttribute(aCI, 3));
     geo.setAttribute('aCW', new THREE.BufferAttribute(aCW, 3));
-    geo.setAttribute('aDNA', new THREE.BufferAttribute(aDNA, 3));
-    geo.setAttribute('aCDNA', new THREE.BufferAttribute(aCDNA, 3));
     geo.setAttribute('aSize', new THREE.BufferAttribute(aSize, 1));
 
     const uniforms = {
-      uProgress: { value: 0 }, uMorph: { value: 0 }, uMorph2: { value: 0 }, uTime: { value: 0 },
-      uMouse: { value: new THREE.Vector2(999, 999) }, uAmp: { value: 0 }, uHelixRot: { value: 0 }, uSizeScale: { value: 15 * renderer.getPixelRatio() }
+      uProgress: { value: 0 }, uMorph: { value: 0 }, uTime: { value: 0 },
+      uMouse: { value: new THREE.Vector2(999, 999) }, uSizeScale: { value: 15 * renderer.getPixelRatio() }
     };
     const mat = new THREE.ShaderMaterial({
       uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
       vertexShader: `
-        attribute vec3 aIcon; attribute vec3 aWord; attribute vec3 aRand; attribute vec3 aCI; attribute vec3 aCW; attribute vec3 aDNA; attribute vec3 aCDNA; attribute float aSize;
-        uniform float uProgress, uMorph, uMorph2, uTime, uAmp, uHelixRot, uSizeScale; uniform vec2 uMouse;
+        attribute vec3 aIcon; attribute vec3 aWord; attribute vec3 aRand; attribute vec3 aCI; attribute vec3 aCW; attribute float aSize;
+        uniform float uProgress, uMorph, uTime, uSizeScale; uniform vec2 uMouse;
         varying vec3 vColor; varying float vA;
         void main(){
-          float m = smoothstep(0.0,1.0,uMorph);
-          float m2 = smoothstep(0.0,1.0,uMorph2);                          // wordmark → doble hélice
-          vec3 wpos = mix(aIcon, aWord, m);
-          vColor = mix(mix(aCI, aCW, m), aCDNA, m2);
-          vec3 base = mix(wpos, aDNA, m2);
+          float m = smoothstep(0.0,1.0,uMorph);                 // 0 = wordmark · 1 = ícono
+          vColor = mix(aCW, aCI, m);
+          vec3 base = mix(aWord, aIcon, m);
           vec3 pos = mix(aRand, base, uProgress);
           vec2 away = pos.xy - uMouse; float dd = length(away);
-          float force = exp(-dd*dd*3.4) * 0.16 * uProgress * (1.0-m2);     // repulsión (se apaga al formar la hélice)
+          float force = exp(-dd*dd*3.4) * 0.16 * uProgress;      // repulsión sutil con el mouse
           pos.xy += (dd > 1e-4 ? away/dd : vec2(0.0)) * force;
-          pos.z += (sin(pos.x*1.3+uTime*0.6)+cos(pos.y*1.3-uTime*0.5))*0.03*uProgress*(1.0-m2)
-                 + m*(1.0-m)*(1.0-m2)*sin(pos.x*8.0+uTime*3.0)*0.25;        // respiración/dispersión en el morph al wordmark
-          float a = uHelixRot * m2;                                        // la hélice gira sobre su eje al formarse
-          float ca = cos(a), sa = sin(a);
-          pos = vec3(pos.x*ca - pos.z*sa, pos.y, pos.x*sa + pos.z*ca);
+          pos.z += (sin(pos.x*1.3+uTime*0.6)+cos(pos.y*1.3-uTime*0.5))*0.03*uProgress
+                 + m*(1.0-m)*sin(pos.x*8.0+uTime*3.0)*0.2;        // dispersión durante el morph
           vA = 0.5 + 0.5*uProgress;
           vec4 mv = modelViewMatrix * vec4(pos,1.0);
           gl_Position = projectionMatrix * mv;
-          gl_PointSize = aSize * uSizeScale * (1.0 + m2*0.35) / -mv.z;
+          gl_PointSize = aSize * uSizeScale / -mv.z;
         }`,
       fragmentShader: `varying vec3 vColor; varying float vA;
         void main(){ float d=length(gl_PointCoord-0.5); float a=smoothstep(0.5,0.05,d); if(a<0.02) discard; gl_FragColor=vec4(vColor,a*vA); }`
@@ -150,8 +126,8 @@
       const w = canvas.clientWidth, h = canvas.clientHeight;
       renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
       halfH = Math.tan(rad(25)) * camera.position.z; halfW = halfH * camera.aspect;
-      gscale = Math.min(0.9 * halfW / 2.6, 0.56 * halfH / 1.3);   // más grande, centrado entre nav y texto
-      points.scale.setScalar(gscale); points.position.y = halfH * 0.2;
+      gscale = Math.min(0.9 * halfW / 2.6, 0.56 * halfH / 1.3);
+      points.scale.setScalar(gscale); points.position.y = 0;   // centrado (el video Seedance también está centrado)
       uniforms.uSizeScale.value = 15 * renderer.getPixelRatio();
     }
     addEventListener('resize', resize); resize();
@@ -169,13 +145,10 @@
       if (vis && !document.hidden) {
         const t = (now - t0) / 1000;
         uniforms.uProgress.value = Math.min(1, t / 2);
-        uniforms.uAmp.value = Math.min(0.5, Math.max(0, (t - 2) * 0.4));
         uniforms.uTime.value = t;
         const p = window.__ACT1P || 0;
-        uniforms.uMorph.value = ss(0, 0.08, p);                            // ícono → wordmark
-        uniforms.uMorph2.value = ss(0.14, 0.30, p);                        // wordmark → doble hélice de partículas
-        uniforms.uHelixRot.value = t * 0.5;                                // la hélice gira lento
-        canvas.style.opacity = (1 - ss(0.29, 0.36, p)).toFixed(3);         // se materializa al ADN fotorreal (destello tapa la costura)
+        uniforms.uMorph.value = ss(0, 0.14, p);                 // wordmark → ícono
+        canvas.style.opacity = (1 - ss(0.15, 0.175, p)).toFixed(3);   // se congela y cede al video Seedance (match-cut)
         mmx += (tmx - mmx) * .08; mmy += (tmy - mmy) * .08;
         uniforms.uMouse.value.set(mmx, mmy);
         renderer.render(scene, camera);
