@@ -8,6 +8,27 @@
   const bail = () => { canvas.style.display = 'none'; if (fallback) fallback.style.display = 'block'; };
   if (reduce || !testGL || typeof THREE === 'undefined') { bail(); return; }
 
+  /* SCROLL del hero (creado SÍNCRONO y en orden → su pin reserva espacio correctamente).
+     Morphea ícono→wordmark y luego dive-in (túnel de luz) hacia el ADN. */
+  let sProg = 0;
+  {
+    const cue = document.getElementById('heroCue');
+    const flash = document.getElementById('heroFlash');
+    const overlay = document.querySelector('.hero-overlay');
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.create({
+        trigger: '#hero', start: 'top top', end: '+=200%', pin: true, pinSpacing: true, scrub: .6,
+        onUpdate: self => {
+          sProg = self.progress;
+          if (cue) cue.style.opacity = 1 - Math.min(1, sProg * 3);
+          if (overlay) overlay.style.opacity = (1 - Math.min(1, Math.max(0, (sProg - 0.5) / 0.22))).toFixed(3);
+          if (flash) flash.style.opacity = Math.max(0, Math.min(1, (sProg - 0.72) / 0.28)).toFixed(3);
+        }
+      });
+      addEventListener('load', () => ScrollTrigger.refresh());
+    }
+  }
+
   const ICON = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 4 44 44' width='440' height='440'>
     <defs><radialGradient id='gl' cx='50%' cy='50%' r='50%'><stop offset='0%' stop-color='#EF4444' stop-opacity='0.4'/><stop offset='100%' stop-color='#EF4444' stop-opacity='0'/></radialGradient>
     <filter id='bl' x='-50%' y='-50%' width='200%' height='200%'><feGaussianBlur stdDeviation='2.2' result='b'/><feMerge><feMergeNode in='b'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs>
@@ -89,13 +110,13 @@
 
     const uniforms = {
       uProgress: { value: 0 }, uMorph: { value: 0 }, uTime: { value: 0 },
-      uMouse: { value: new THREE.Vector2(999, 999) }, uAmp: { value: 0 }, uSizeScale: { value: 15 * renderer.getPixelRatio() }
+      uMouse: { value: new THREE.Vector2(999, 999) }, uAmp: { value: 0 }, uWarp2: { value: 0 }, uSizeScale: { value: 15 * renderer.getPixelRatio() }
     };
     const mat = new THREE.ShaderMaterial({
       uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
       vertexShader: `
         attribute vec3 aIcon; attribute vec3 aWord; attribute vec3 aRand; attribute vec3 aCI; attribute vec3 aCW; attribute float aSize;
-        uniform float uProgress, uMorph, uTime, uAmp, uSizeScale; uniform vec2 uMouse;
+        uniform float uProgress, uMorph, uTime, uAmp, uWarp2, uSizeScale; uniform vec2 uMouse;
         varying vec3 vColor; varying float vA;
         void main(){
           float m = smoothstep(0.0,1.0,uMorph);
@@ -107,10 +128,15 @@
           pos.xy += (dd > 1e-4 ? away/dd : vec2(0.0)) * force;
           pos.z += (sin(pos.x*1.3+uTime*0.6)+cos(pos.y*1.3-uTime*0.5))*0.03*uProgress
                  + m*(1.0-m)*sin(pos.x*8.0+uTime*3.0)*0.25;                // respiración + dispersión en el morph
-          vA = 0.5 + 0.5*uProgress;
+          // DIVE-IN: nos adentramos en la palabra — las partículas se abren y pasan volando junto a la cámara (estelas de luz)
+          float w2 = uWarp2*uWarp2;
+          pos.xy *= 1.0 + w2*2.6;
+          pos.z += w2*(5.6 + aSize*2.2);
+          vColor = mix(vColor, vec3(1.0,0.9,0.86), uWarp2*0.85);           // hacia luz cálida
+          vA = (0.5 + 0.5*uProgress) * (1.0 - uWarp2*0.15);
           vec4 mv = modelViewMatrix * vec4(pos,1.0);
           gl_Position = projectionMatrix * mv;
-          gl_PointSize = aSize * uSizeScale / -mv.z;
+          gl_PointSize = aSize * uSizeScale * (1.0 + w2*2.4) / -mv.z;      // estelas grandes al pasar
         }`,
       fragmentShader: `varying vec3 vColor; varying float vA;
         void main(){ float d=length(gl_PointCoord-0.5); float a=smoothstep(0.5,0.05,d); if(a<0.02) discard; gl_FragColor=vec4(vColor,a*vA); }`
@@ -135,15 +161,6 @@
       tmx = wx / gscale; tmy = (wy - points.position.y) / gscale;
     }, { passive: true });
 
-    /* SCROLL: hero pineado, el scroll morphea ícono → wordmark */
-    const cue = document.getElementById('heroCue');
-    if (typeof ScrollTrigger !== 'undefined') {
-      ScrollTrigger.create({
-        trigger: '#hero', start: 'top top', end: '+=130%', pin: true, scrub: .6,
-        onUpdate: self => { uniforms.uMorph.value = self.progress; if (cue) cue.style.opacity = 1 - Math.min(1, self.progress * 3); }
-      });
-    }
-
     let vis = true;
     new IntersectionObserver(e => vis = e[0].isIntersecting).observe(canvas);
     const t0 = performance.now();
@@ -153,6 +170,8 @@
         uniforms.uProgress.value = Math.min(1, t / 2);
         uniforms.uAmp.value = Math.min(0.5, Math.max(0, (t - 2) * 0.4));
         uniforms.uTime.value = t;
+        uniforms.uMorph.value = Math.min(1, sProg / 0.5);                  // morph ícono→wordmark (primera mitad)
+        uniforms.uWarp2.value = Math.max(0, Math.min(1, (sProg - 0.62) / 0.38));  // dive-in / túnel de luz
         mmx += (tmx - mmx) * .08; mmy += (tmy - mmy) * .08;
         uniforms.uMouse.value.set(mmx, mmy);
         renderer.render(scene, camera);

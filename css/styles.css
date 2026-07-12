@@ -112,7 +112,7 @@ body.pointer-fine .cursor-glow{opacity:.6}
 @media(max-width:900px){.hero{padding-top:104px}.hero-grid{grid-template-columns:1fr;gap:38px;text-align:center}.hero-copy{max-width:none;margin:0 auto}.hero-copy .hero-stats{justify-content:center}.builder{max-width:460px}}
 
 /* --- FASE 2 · ADN del proceso (sticky nativo, sin pin de GSAP) --- */
-.dna{position:relative;height:760vh;background:radial-gradient(120% 60% at 50% 40%,#160a1e,var(--bg) 70%)}
+.dna{position:relative;height:760vh;margin-top:-100svh;background:radial-gradient(120% 60% at 50% 40%,#160a1e,var(--bg) 70%)}
 .dna-stage{position:sticky;top:0;height:100svh;overflow:hidden}
 .dna-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block;
   background:#0A0508 url(../assets/dna/frames/f_001.jpg) center/cover no-repeat}
@@ -122,18 +122,30 @@ body.pointer-fine .cursor-glow{opacity:.6}
   text-align:center;width:min(680px,90vw);transition:opacity .3s}
 .dna-intro .sec-title{font-size:clamp(2.2rem,5.4vw,3.6rem)}
 .dna-intro .sec-desc{margin-top:14px}
-.dna-cards{position:absolute;inset:0;z-index:2;pointer-events:none}
-.dna-card{position:absolute;top:50%;width:min(330px,42vw);opacity:0;will-change:transform,opacity;
-  background:linear-gradient(160deg,rgba(23,10,20,.86),rgba(13,11,26,.82));
-  border:1px solid var(--border-r);border-radius:var(--radius);padding:22px 24px;
-  box-shadow:0 40px 90px -40px #000,inset 0 1px 0 rgba(255,255,255,.05);backdrop-filter:blur(8px)}
-.dna-card[data-side=l]{left:clamp(20px,7vw,120px)}
-.dna-card[data-side=r]{right:clamp(20px,7vw,120px)}
-.dna-card .dc-n{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.14em;
-  color:var(--color);display:block;margin-bottom:8px}
-.dna-card h3{font-size:1.32rem;margin-bottom:8px}
-.dna-card p{color:var(--muted);font-size:.96rem;line-height:1.55}
-.dna-card[data-side=r] .dc-n{color:#A78BFA}
+/* flashes que enlazan hero(dive-in)→ADN */
+.hero-flash{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;
+  background:radial-gradient(60% 45% at 50% 46%,#fff,rgba(255,220,210,.9) 22%,rgba(239,68,68,.45) 45%,transparent 72%)}
+.dna-flash{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;
+  background:radial-gradient(60% 45% at 50% 50%,#fff,rgba(255,220,210,.85) 24%,rgba(139,92,246,.4) 48%,transparent 74%)}
+
+/* cards que VIAJAN por el ADN: salen abajo-izquierda → grandes al centro → se esconden arriba-derecha */
+.dna-cards{position:absolute;inset:0;z-index:3;pointer-events:none}
+.dna-card{position:absolute;left:50%;top:50%;width:min(400px,86vw);opacity:0;will-change:transform,opacity;
+  transform:translate(-50%,-50%);border-radius:20px;padding:26px 28px 28px;
+  background:linear-gradient(155deg,rgba(28,12,24,.82),rgba(15,12,30,.78));
+  border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 50px 120px -40px #000,0 0 0 1px rgba(255,255,255,.04),
+    inset 0 1px 0 rgba(255,255,255,.08),0 0 60px -20px var(--dc-glow,rgba(239,68,68,.5))}
+.dna-card::before{content:"";position:absolute;inset:0;border-radius:20px;padding:1px;pointer-events:none;
+  background:linear-gradient(150deg,var(--dc-acc,#EF4444),transparent 55%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude}
+.dna-card .dc-n{font-family:var(--display);font-weight:800;font-size:.9rem;letter-spacing:.16em;
+  color:var(--dc-acc,#EF4444);display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.dna-card .dc-n::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--dc-acc,#EF4444),transparent)}
+.dna-card h3{font-size:1.5rem;margin-bottom:10px;letter-spacing:-.01em}
+.dna-card p{color:#cbd3df;font-size:1.02rem;line-height:1.55}
+.dna-card[data-side=r]{--dc-acc:#A78BFA;--dc-glow:rgba(139,92,246,.5)}
 .dna-fallback{display:none}
 .dna-nogl .dna-canvas,.dna-nogl .dna-veil,.dna-nogl .dna-cards{display:none}
 .dna-nogl{height:auto;padding:clamp(80px,12vh,140px) clamp(20px,5vw,40px)}
