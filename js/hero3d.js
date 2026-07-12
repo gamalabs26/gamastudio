@@ -103,7 +103,7 @@
           vec3 base = mix(aIcon, aWord, m);
           vec3 pos = mix(aRand, base, uProgress);
           vec2 away = pos.xy - uMouse; float dd = length(away);
-          float force = exp(-dd*dd*2.4) * 0.5 * uProgress;                 // repulsión: se apartan del cursor
+          float force = exp(-dd*dd*3.4) * 0.16 * uProgress;                // repulsión sutil: se apartan del cursor
           pos.xy += (dd > 1e-4 ? away/dd : vec2(0.0)) * force;
           pos.z += (sin(pos.x*1.3+uTime*0.6)+cos(pos.y*1.3-uTime*0.5))*0.03*uProgress
                  + m*(1.0-m)*sin(pos.x*8.0+uTime*3.0)*0.25;                // respiración + dispersión en el morph
@@ -123,8 +123,8 @@
       const w = canvas.clientWidth, h = canvas.clientHeight;
       renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
       halfH = Math.tan(rad(25)) * camera.position.z; halfW = halfH * camera.aspect;
-      gscale = Math.min(0.8 * halfW / 2.6, 0.48 * halfH / 1.3);   // cabe wordmark (ancho) + ícono (alto), deja aire abajo p/ el texto
-      points.scale.setScalar(gscale); points.position.y = halfH * 0.42;
+      gscale = Math.min(0.9 * halfW / 2.6, 0.62 * halfH / 1.3);   // logo MÁS grande; cabe wordmark (ancho) + ícono (alto)
+      points.scale.setScalar(gscale); points.position.y = halfH * 0.46;
       uniforms.uSizeScale.value = 15 * renderer.getPixelRatio();
     }
     addEventListener('resize', resize); resize();
