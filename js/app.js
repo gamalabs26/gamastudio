@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
   const FEATURED = [['cepa','Landing cinemática'],['vialactea','Scrollytelling'],['obtura','Producto interactivo'],['helios','WebGL · shader'],['anima','Showcase 3D'],['palacio','Experiencia Art Déco'],['anden','Scroll narrativo'],['copal','Lujo editorial'],['niebla','Video hero'],['minutero','Zoom infinito'],['cumbre','Scroll ascendente'],['pigmento','Fluidos WebGL']];
   const ALL = ['cepa','obtura','vialactea','anden','anima','helios','palacio','copal','niebla','minutero','neon','cumbre','meridiano','lazaro','automata','helice','volta','vivero','plasma','vertice','nauta','miga','noctambula','pigmento','sumi','madrugada','grado','reticula','ruido','modula','pulso','enjambre','gravedad','canon','oraculo','vitrea','faro'];
   const track = document.getElementById('prTrack'), gal = document.getElementById('galGrid');
-  if (track) track.innerHTML = FEATURED.map(([s, t]) => `<article class="work-card tilt"><div class="wc-bar"><span class="wc-dot r"></span><span class="wc-dot"></span><span class="wc-dot"></span><span class="wc-url">gamastudio.mx/${s}</span></div><div class="wc-shot"><img src="assets/work/${s}.jpg" alt="Sitio ${NAMES[s]}" loading="lazy"></div><div class="wc-meta"><span class="wc-name">${NAMES[s]}</span><span class="wc-type">${t}</span></div></article>`).join('');
+  if (track) track.innerHTML = FEATURED.map(([s, t]) => `<article class="work-card tilt"><div class="wc-bar"><span class="wc-dot r"></span><span class="wc-dot"></span><span class="wc-dot"></span><span class="wc-url">gamastudio.mx/${s}</span></div><div class="wc-shot"><img src="assets/work/${s}.jpg" alt="Sitio ${NAMES[s]}" loading="eager"></div><div class="wc-meta"><span class="wc-name">${NAMES[s]}</span><span class="wc-type">${t}</span></div></article>`).join('');
   if (gal) gal.innerHTML = ALL.map(s => `<div class="gal-item"><img src="assets/work/${s}.jpg" alt="${NAMES[s]}" loading="lazy"><span class="gi-name">${NAMES[s]}</span></div>`).join('');
 })();
 
@@ -83,16 +83,25 @@ function aperture(canvas, opts = {}) {
 aperture(document.getElementById('aperture'), { lines: 44, scale: .42 });
 const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta, { lines: 30, scale: .5 });
 
-/* headline cinético (palabras suben con blur) */
+/* headline cinético (palabras suben con blur) — sin romper el span de gradiente */
 (() => {
   const el = document.querySelector('[data-kinetic]');
   if (!el) return;
-  const html = el.innerHTML;
-  el.innerHTML = html.replace(/(<[^>]+>)|([^<\s]+)/g, (m, tag, word) => tag ? tag : `<span class="word">${word}</span>`);
-  const words = el.querySelectorAll('.word');
+  const targets = [];
+  [...el.childNodes].forEach(node => {
+    if (node.nodeType === 3) { // texto suelto → partir en palabras
+      const frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(tok => {
+        if (tok.trim()) { const s = document.createElement('span'); s.className = 'word'; s.textContent = tok; frag.appendChild(s); targets.push(s); }
+        else frag.appendChild(document.createTextNode(tok));
+      });
+      el.replaceChild(frag, node);
+    } else if (node.nodeName === 'BR') { /* conservar salto */ }
+    else if (node.classList) { node.classList.add('word'); targets.push(node); } // el <span class="grad"> anima COMPLETO
+  });
   if (reduce) return;
-  gsap.set(words, { yPercent: 110, opacity: 0, filter: 'blur(8px)' });
-  gsap.to(words, { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: .9, stagger: .05, ease: 'power3.out', delay: .15 });
+  gsap.set(targets, { yPercent: 115, opacity: 0, filter: 'blur(8px)' });
+  gsap.to(targets, { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: .9, stagger: .05, ease: 'power3.out', delay: .15 });
 })();
 
 /* reveals */
