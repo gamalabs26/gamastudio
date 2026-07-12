@@ -112,7 +112,7 @@ body.pointer-fine .cursor-glow{opacity:.6}
 @media(max-width:900px){.hero{padding-top:104px}.hero-grid{grid-template-columns:1fr;gap:38px;text-align:center}.hero-copy{max-width:none;margin:0 auto}.hero-copy .hero-stats{justify-content:center}.builder{max-width:460px}}
 
 /* --- ACTO 1 · hero partículas → dive-in → ADN (una secuencia, un stage fijo) --- */
-.act1{position:relative;height:840vh;background:radial-gradient(120% 60% at 50% 42%,#140a1c,var(--bg) 72%)}
+.act1{position:relative;height:1320vh;background:radial-gradient(120% 60% at 50% 42%,#140a1c,var(--bg) 72%)}
 .act1-stage{position:sticky;top:0;height:100svh;overflow:hidden}
 .dna-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:block;opacity:0;background:#0A0508}
 .logo3d{position:absolute;inset:0;width:100%;height:100%;z-index:2;display:block}

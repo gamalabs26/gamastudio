@@ -11,9 +11,11 @@
   const ctx = canvas.getContext('2d');
   if (reduce || !ctx) { section.classList.add('dna-nogl'); return; }
 
-  const N = 149, PAD = 'assets/dna/frames/';           // 1–61 dive ícono→ADN · 61–149 rotación del ADN
+  const N = 246, PAD = 'assets/dna/frames/';           // 1–61 dive ícono→ADN · 61–149 rotación · 150–246 SALIDA: pull-back a escritorio
   const F0 = 0.15, FSPAN = 0.83;                        // el video (Seedance) arranca tras el morph de partículas (p=0.15)
-  const FRONT = F0 + FSPAN * (60 / (N - 1));            // p donde el ADN queda de frente (~0.49)
+  const pAt = k => F0 + FSPAN * ((k - 1) / (N - 1));    // progreso donde cae el cuadro k
+  const FRONT = pAt(61);                               // p donde el ADN queda de frente
+  const ROT_END = pAt(149);                            // fin de la rotación = arranca el pull-back al escritorio
   const dpr = Math.min(devicePixelRatio || 1, 2);
   const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const clamp = x => Math.max(0, Math.min(1, x));
@@ -49,9 +51,10 @@
   const intro = section.querySelector('.dna-intro');
   const overlay = section.querySelector('.hero-overlay');
   const cue = document.getElementById('heroCue');
-  const CST = FRONT + 0.05, WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);   // cards tras quedar el ADN de frente
+  const CST = FRONT + 0.03, CEND = ROT_END - 0.005;    // cards viajan entre el ADN de frente y el fin de la rotación (antes del pull-back)
+  const WIN = 0.30, STEP = (1 - WIN) / (nCards - 1);
   function updateCards(p) {
-    const cp = clamp((p - CST) / (0.985 - CST));
+    const cp = clamp((p - CST) / (CEND - CST));
     const Xmax = Math.min(innerWidth * 0.30, 360), Ymax = innerHeight * 0.34;
     cards.forEach((c, i) => {
       const u = (cp - i * STEP) / WIN;

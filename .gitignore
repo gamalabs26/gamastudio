@@ -1,3 +1,4 @@
 _brief/
 node_modules/
 *.mjs
+assets/dna/*.mp4
