@@ -2,9 +2,11 @@
    Todo el visual es VIDEO (Codex + Seedance), NO canvas/partículas/matemática. El scroll
    reproduce cuadro a cuadro: (1) aparece "GamaStudio" → (2) morph a ícono → (3) dive-in de
    partículas → (4) ADN de frente que gira. Encima, overlays HTML (copy + cards del proceso).
-   1–61 dive ícono→ADN · 61–149 rotación de frente · 150–159 la cámara se aleja y el ADN queda
-   como TÚNEL/hélice girando en el espacio. El hero TERMINA ahí (en el túnel), y la sección
-   #proyectos que sigue reusa ese mismo túnel de fondo (loop) con el scroll horizontal encima. */
+   1–61 dive ícono→ADN · 61–149 rotación de frente (≈ una vuelta completa: el frame 149 vuelve
+   a la pose del 61). El hero TERMINA en la rotación (149), y la sección #proyectos que sigue
+   NO usa un loop aparte: continúa ESTA MISMA rotación scrubbeada con el scroll horizontal de
+   las cards (entra en 61≈149 → gira a 149), para que el movimiento no se interrumpa ni salte.
+   Los frames 150–159 (pull-back al escritorio) quedaron descartados con ese acto. */
 (() => {
   const section = document.getElementById('proceso');
   const canvas = document.getElementById('dnaCanvas');
@@ -13,11 +15,11 @@
   const ctx = canvas.getContext('2d');
   if (reduce || !ctx) { section.classList.add('dna-nogl'); return; }
 
-  const N = 159, PAD = 'assets/dna/frames/';           // 1–61 dive ícono→ADN · 61–149 rotación · 150–159 alejamiento al TÚNEL (fin del hero); 160+ (escritorio) ya no se usa
+  const N = 149, PAD = 'assets/dna/frames/';           // 1–61 dive ícono→ADN · 61–149 rotación de frente (fin del hero); 150+ (pull-back/escritorio) ya no se usa
   const F0 = 0.15, FSPAN = 0.83;                        // el video (Seedance) arranca tras el morph de partículas (p=0.15)
   const pAt = k => F0 + FSPAN * ((k - 1) / (N - 1));    // progreso donde cae el cuadro k
   const FRONT = pAt(61);                               // p donde el ADN queda de frente
-  const ROT_END = pAt(149);                            // fin de la rotación = arranca el pull-back al escritorio
+  const ROT_END = pAt(149);                            // fin de la rotación (fin del hero); de aquí sigue #proyectos con la misma hélice
   const dpr = Math.min(devicePixelRatio || 1, 2);
   const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const clamp = x => Math.max(0, Math.min(1, x));

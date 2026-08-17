@@ -147,15 +147,20 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
   if (reduce) tr.style.animation = 'none';
 })();
 
-/* PROYECTOS — el mismo túnel de ADN del hero (frames 150-159) girando de fondo, en loop */
+/* PROYECTOS — la MISMA hélice del hero sigue girando, SCRUBBEADA con el scroll horizontal de
+   las cards (no un loop autónomo aparte, que era lo que se sentía como "salto" + atrás/adelante).
+   El hero termina en el frame 149; como 61→149 es ≈ una vuelta completa (149≈61), aquí entra en
+   61 sin salto y rota 61→149 conforme se recorren los proyectos: mismo sentido de giro, y solo
+   se mueve si haces scroll (jamás gira solo). Un único ScrollTrigger mueve cards + hélice juntas. */
 (() => {
+  const pin = document.getElementById('prPin'), track = document.getElementById('prTrack');
   const cvs = document.getElementById('prTunnel'), sec = document.querySelector('.proyectos');
-  if (!cvs || !sec || reduce) return;
+  if (!pin || !track || !cvs || !sec || reduce) return;
   const ctx = cvs.getContext('2d'); if (!ctx) return;
   const dpr = Math.min(devicePixelRatio || 1, 2);
-  const LOOP = []; for (let i = 150; i <= 159; i++) LOOP.push(i); for (let i = 158; i >= 151; i--) LOOP.push(i); // palíndromo → sin salto
+  const A = 61, B = 149;                                  // rotación pura (61→149 ≈ una vuelta; sin el pull-back 150-159)
   const imgs = {}; let cur = null;
-  LOOP.forEach(n => { if (imgs[n]) return; const im = new Image(); im.onload = () => { if (!cur) cover(im); }; im.src = `assets/dna/frames/f_${String(n).padStart(3, '0')}.jpg`; imgs[n] = im; });
+  for (let n = A; n <= B; n++) { const im = new Image(); im.onload = () => { if (!cur) cover(im); }; im.src = `assets/dna/frames/f_${String(n).padStart(3, '0')}.jpg`; imgs[n] = im; }
   function cover(img) {
     if (!img || !img.complete || !img.naturalWidth) return; cur = img;
     const cw = cvs.width, ch = cvs.height, s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
@@ -163,22 +168,21 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
   }
   function size() { cvs.width = Math.round(cvs.clientWidth * dpr); cvs.height = Math.round(cvs.clientHeight * dpr); if (cur) cover(cur); }
   addEventListener('resize', size); size();
-  let vis = false, raf = 0, t = 0;
-  function frame() { if (!vis) { raf = 0; return; } t += 0.26; const im = imgs[LOOP[Math.floor(t) % LOOP.length]]; if (im && im.complete) cover(im); raf = requestAnimationFrame(frame); }
-  new IntersectionObserver(e => { vis = e[0].isIntersecting; if (vis && !raf) raf = requestAnimationFrame(frame); }, { rootMargin: '300px' }).observe(sec);
-})();
-
-/* PROYECTOS — scroll horizontal pinneado */
-(() => {
-  const pin = document.getElementById('prPin'), track = document.getElementById('prTrack');
-  if (!pin || !track || reduce || innerWidth <= 820) return;
+  function drawAt(prog) {                                 // prog 0..1 → rota 61→149 hacia ADELANTE (mismo sentido que el hero)
+    const p = prog < 0 ? 0 : prog > 1 ? 1 : prog;
+    const im = imgs[A + Math.round(p * (B - A))];
+    if (im && im.complete) cover(im);
+  }
+  drawAt(0);
+  if (innerWidth <= 820) return;                          // móvil: sin pin/scrub (CSS hace scroll horizontal) → hélice fija ≈149
   gsap.to(track, {
     x: () => -(track.scrollWidth - pin.clientWidth + 50),
     ease: 'none',
     scrollTrigger: {
       trigger: '.proyectos', start: 'top top',
       end: () => '+=' + (track.scrollWidth - pin.clientWidth + 50),
-      scrub: .6, pin: pin, anticipatePin: 1, invalidateOnRefresh: true
+      scrub: .6, pin: pin, anticipatePin: 1, invalidateOnRefresh: true,
+      onUpdate: self => drawAt(self.progress)
     }
   });
 })();
