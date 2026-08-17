@@ -2,7 +2,9 @@
    Todo el visual es VIDEO (Codex + Seedance), NO canvas/partículas/matemática. El scroll
    reproduce cuadro a cuadro: (1) aparece "GamaStudio" → (2) morph a ícono → (3) dive-in de
    partículas → (4) ADN de frente que gira. Encima, overlays HTML (copy + cards del proceso).
-   Frames: 1–49 palabra→ícono · 49–110 ícono→ADN (dive) · 110–198 rotación del ADN. */
+   1–61 dive ícono→ADN · 61–149 rotación de frente · 150–159 la cámara se aleja y el ADN queda
+   como TÚNEL/hélice girando en el espacio. El hero TERMINA ahí (en el túnel), y la sección
+   #proyectos que sigue reusa ese mismo túnel de fondo (loop) con el scroll horizontal encima. */
 (() => {
   const section = document.getElementById('proceso');
   const canvas = document.getElementById('dnaCanvas');
@@ -11,7 +13,7 @@
   const ctx = canvas.getContext('2d');
   if (reduce || !ctx) { section.classList.add('dna-nogl'); return; }
 
-  const N = 246, PAD = 'assets/dna/frames/';           // 1–61 dive ícono→ADN · 61–149 rotación · 150–246 SALIDA: pull-back a escritorio
+  const N = 159, PAD = 'assets/dna/frames/';           // 1–61 dive ícono→ADN · 61–149 rotación · 150–159 alejamiento al TÚNEL (fin del hero); 160+ (escritorio) ya no se usa
   const F0 = 0.15, FSPAN = 0.83;                        // el video (Seedance) arranca tras el morph de partículas (p=0.15)
   const pAt = k => F0 + FSPAN * ((k - 1) / (N - 1));    // progreso donde cae el cuadro k
   const FRONT = pAt(61);                               // p donde el ADN queda de frente

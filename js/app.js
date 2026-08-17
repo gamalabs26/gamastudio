@@ -147,6 +147,27 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
   if (reduce) tr.style.animation = 'none';
 })();
 
+/* PROYECTOS — el mismo túnel de ADN del hero (frames 150-159) girando de fondo, en loop */
+(() => {
+  const cvs = document.getElementById('prTunnel'), sec = document.querySelector('.proyectos');
+  if (!cvs || !sec || reduce) return;
+  const ctx = cvs.getContext('2d'); if (!ctx) return;
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const LOOP = []; for (let i = 150; i <= 159; i++) LOOP.push(i); for (let i = 158; i >= 151; i--) LOOP.push(i); // palíndromo → sin salto
+  const imgs = {}; let cur = null;
+  LOOP.forEach(n => { if (imgs[n]) return; const im = new Image(); im.onload = () => { if (!cur) cover(im); }; im.src = `assets/dna/frames/f_${String(n).padStart(3, '0')}.jpg`; imgs[n] = im; });
+  function cover(img) {
+    if (!img || !img.complete || !img.naturalWidth) return; cur = img;
+    const cw = cvs.width, ch = cvs.height, s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
+    ctx.clearRect(0, 0, cw, ch); ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+  }
+  function size() { cvs.width = Math.round(cvs.clientWidth * dpr); cvs.height = Math.round(cvs.clientHeight * dpr); if (cur) cover(cur); }
+  addEventListener('resize', size); size();
+  let vis = false, raf = 0, t = 0;
+  function frame() { if (!vis) { raf = 0; return; } t += 0.26; const im = imgs[LOOP[Math.floor(t) % LOOP.length]]; if (im && im.complete) cover(im); raf = requestAnimationFrame(frame); }
+  new IntersectionObserver(e => { vis = e[0].isIntersecting; if (vis && !raf) raf = requestAnimationFrame(frame); }, { rootMargin: '300px' }).observe(sec);
+})();
+
 /* PROYECTOS — scroll horizontal pinneado */
 (() => {
   const pin = document.getElementById('prPin'), track = document.getElementById('prTrack');
