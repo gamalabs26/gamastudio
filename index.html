@@ -15,9 +15,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=11">
+<link rel="stylesheet" href="css/styles.css?v=12">
 </head>
 <body>
+
+<!-- HÉLICE ÚNICA: un solo canvas de ADN, fijo detrás de TODO, compartido por el hero (#proceso)
+     y el portafolio (#proyectos). Vive a nivel body (fuera de cualquier ancestro con transform,
+     que rompería position:fixed) para que NO se deslice en la transición: solo cambia el contenido
+     encima. Lo dibujan dna.js (hero) y app.js (portafolio); su opacidad la gobierna su rango. -->
+<canvas class="dna-canvas" id="dnaCanvas" aria-hidden="true"></canvas>
 
 <div class="cursor" id="cursor" aria-hidden="true"></div>
 <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
@@ -39,7 +45,6 @@
   <!-- ACTO 1 · hero partículas → dive-in → ADN del proceso (UNA sola secuencia cinematográfica) -->
   <section class="act1" id="proceso">
     <div class="act1-stage">
-      <canvas class="dna-canvas" id="dnaCanvas" aria-hidden="true"></canvas>   <!-- video Seedance scrubeado: ícono→dive→ADN→rotación -->
       <canvas class="logo3d" id="logo3d" aria-hidden="true"></canvas>          <!-- partículas del logo: wordmark→ícono (con mouse) -->
       <img class="logo-fallback" src="assets/brand/gama-studio.svg" alt="GamaStudio" aria-hidden="true">
       <div class="hero-veil" aria-hidden="true"></div>
@@ -82,7 +87,6 @@
   <!-- PROYECTOS — el ADN del hero se quedó girando como túnel; aquí encima entra el scroll horizontal -->
   <section class="proyectos" id="proyectos">
     <div class="pr-pin" id="prPin">
-      <canvas class="pr-tunnel" id="prTunnel" aria-hidden="true"></canvas>
       <div class="pr-head">
         <span class="sec-num">Portafolio · sitios reales</span>
         <h2 class="sec-title">Páginas web que hablan<br>por <span class="grad">sí solas</span>.</h2>
@@ -166,8 +170,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/app.js?v=16"></script>
+<script src="js/app.js?v=17"></script>
 <script src="js/hero3d.js?v=16"></script>
-<script src="js/dna.js?v=41"></script>
+<script src="js/dna.js?v=42"></script>
 </body>
 </html>

@@ -147,33 +147,43 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
   if (reduce) tr.style.animation = 'none';
 })();
 
-/* PROYECTOS — la MISMA hélice del hero sigue girando, SCRUBBEADA con el scroll horizontal de
-   las cards (no un loop autónomo aparte, que era lo que se sentía como "salto" + atrás/adelante).
-   El hero termina en el frame 149; como 61→149 es ≈ una vuelta completa (149≈61), aquí entra en
-   61 sin salto y rota 61→149 conforme se recorren los proyectos: mismo sentido de giro, y solo
-   se mueve si haces scroll (jamás gira solo). Un único ScrollTrigger mueve cards + hélice juntas. */
+/* PROYECTOS — dibuja sobre el MISMO canvas fijo del hero (#dnaCanvas), que no se desliza en la
+   transición: aquí solo se continúa la rotación. El hero termina en 149; como 61→149 es ≈ una
+   vuelta completa (149≈61), entra en 61 sin salto y rota 61→149 SCRUBBEADA con el scroll de las
+   cards (mismo sentido, solo gira si haces scroll). El canvas se enciende/apaga por rango con un
+   IntersectionObserver (sirve desktop y móvil); dna.js lo controla mientras el hero está en vista. */
 (() => {
   const pin = document.getElementById('prPin'), track = document.getElementById('prTrack');
-  const cvs = document.getElementById('prTunnel'), sec = document.querySelector('.proyectos');
+  const cvs = document.getElementById('dnaCanvas'), sec = document.querySelector('.proyectos');
   if (!pin || !track || !cvs || !sec || reduce) return;
   const ctx = cvs.getContext('2d'); if (!ctx) return;
   const dpr = Math.min(devicePixelRatio || 1, 2);
   const A = 61, B = 149;                                  // rotación pura (61→149 ≈ una vuelta; sin el pull-back 150-159)
-  const imgs = {}; let cur = null;
-  for (let n = A; n <= B; n++) { const im = new Image(); im.onload = () => { if (!cur) cover(im); }; im.src = `assets/dna/frames/f_${String(n).padStart(3, '0')}.jpg`; imgs[n] = im; }
+  const imgs = {};
+  for (let n = A; n <= B; n++) { const im = new Image(); im.src = `assets/dna/frames/f_${String(n).padStart(3, '0')}.jpg`; imgs[n] = im; }
+  let active = false, lastProg = 0;
+  function ensureSize() { const w = Math.round(cvs.clientWidth * dpr), h = Math.round(cvs.clientHeight * dpr); if (cvs.width !== w || cvs.height !== h) { cvs.width = w; cvs.height = h; } }
   function cover(img) {
-    if (!img || !img.complete || !img.naturalWidth) return; cur = img;
+    if (!img || !img.complete || !img.naturalWidth) return;
     const cw = cvs.width, ch = cvs.height, s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
     ctx.clearRect(0, 0, cw, ch); ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
   }
-  function size() { cvs.width = Math.round(cvs.clientWidth * dpr); cvs.height = Math.round(cvs.clientHeight * dpr); if (cur) cover(cur); }
-  addEventListener('resize', size); size();
   function drawAt(prog) {                                 // prog 0..1 → rota 61→149 hacia ADELANTE (mismo sentido que el hero)
-    const p = prog < 0 ? 0 : prog > 1 ? 1 : prog;
-    const im = imgs[A + Math.round(p * (B - A))];
-    if (im && im.complete) cover(im);
+    lastProg = prog < 0 ? 0 : prog > 1 ? 1 : prog;
+    ensureSize();
+    const im = imgs[A + Math.round(lastProg * (B - A))];
+    if (im && im.complete) cover(im); else { const f = imgs[A]; if (f && f.complete) cover(f); }
   }
-  drawAt(0);
+  /* opacidad del canvas por rango (desktop + móvil): visible mientras #proyectos esté en viewport;
+     al pasarlo (queda arriba), se apaga para no tapar Servicios. Cuando aún no llega, no lo tocamos
+     (lo gobierna dna.js con el hero). */
+  new IntersectionObserver(es => {
+    const e = es[0];
+    if (e.isIntersecting) { active = true; cvs.style.opacity = '1'; drawAt(lastProg); }
+    else if (e.boundingClientRect.top < 0) { active = false; cvs.style.opacity = '0'; }
+    else { active = false; }
+  }, { threshold: 0 }).observe(sec);
+  addEventListener('resize', () => { if (active) drawAt(lastProg); });
   if (innerWidth <= 820) return;                          // móvil: sin pin/scrub (CSS hace scroll horizontal) → hélice fija ≈149
   gsap.to(track, {
     x: () => -(track.scrollWidth - pin.clientWidth + 50),
@@ -182,7 +192,7 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
       trigger: '.proyectos', start: 'top top',
       end: () => '+=' + (track.scrollWidth - pin.clientWidth + 50),
       scrub: .6, pin: pin, anticipatePin: 1, invalidateOnRefresh: true,
-      onUpdate: self => drawAt(self.progress)
+      onUpdate: self => { if (active) drawAt(self.progress); }
     }
   });
 })();
