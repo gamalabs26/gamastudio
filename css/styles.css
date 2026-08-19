@@ -147,7 +147,8 @@ body.pointer-fine .cursor-glow{opacity:.6}
 .act1 .hero-overlay{position:absolute;left:50%;bottom:clamp(60px,11vh,120px);transform:translateX(-50%);
   z-index:6;max-width:660px;width:90vw;text-align:center;will-change:opacity}
 .dna-intro{position:absolute;top:clamp(96px,15vh,150px);left:50%;transform:translateX(-50%);z-index:6;
-  text-align:center;width:min(680px,90vw);opacity:0;transition:none}
+  text-align:center;width:min(680px,90vw);opacity:0;transition:none;
+  text-shadow:0 2px 18px rgba(0,0,0,.6),0 0 6px rgba(0,0,0,.55)}
 .dna-intro .sec-title{font-size:clamp(2.2rem,5.4vw,3.6rem)}
 .dna-intro .sec-desc{margin-top:14px}
 /* flashes que enlazan hero(dive-in)→ADN */
