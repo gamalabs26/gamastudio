@@ -52,7 +52,25 @@ body.pointer-fine .cursor-glow{opacity:.6}
 .nav-links{display:flex;gap:22px;font-size:.92rem;color:var(--muted);font-family:var(--display)}
 .nav-links a{transition:color .25s}.nav-links a:hover{color:var(--text)}
 .nav-cta{padding:.55em 1.1em;font-size:.86rem}
-@media(max-width:820px){.nav-links{display:none}}
+.nav-burger{display:none;flex-direction:column;gap:5px;width:38px;height:38px;align-items:center;justify-content:center;border:0;background:transparent;cursor:pointer;padding:0;flex:none}
+.nav-burger span{display:block;width:20px;height:2px;border-radius:2px;background:var(--text);transition:transform .3s var(--ease),opacity .2s}
+.menu-cta{display:none}
+@media(max-width:820px){
+  .nav-burger{display:flex}
+  .nav-cta{display:none}
+  .menu-cta{display:block;margin-top:6px;background:var(--color);color:#fff!important;text-align:center;font-weight:700}
+  .menu-cta:active{background:var(--color-light)}
+  .nav-links{display:flex;position:absolute;top:calc(100% + 10px);left:0;right:0;flex-direction:column;gap:2px;
+    background:rgba(10,5,8,.97);border:1px solid var(--border);border-radius:20px;padding:10px;
+    opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .28s var(--ease),transform .28s var(--ease),visibility .28s;
+    box-shadow:0 24px 60px -24px #000;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .nav.open .nav-links{opacity:1;visibility:visible;transform:none}
+  .nav-links a{padding:13px 16px;border-radius:12px;color:var(--text);font-size:1rem}
+  .nav-links a:active{background:rgba(255,255,255,.06)}
+  .nav.open .nav-burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav.open .nav-burger span:nth-child(2){opacity:0}
+  .nav.open .nav-burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+}
 
 /* HERO — logo de partículas 3D */
 .hero{position:relative;min-height:100svh;overflow:hidden;display:flex;flex-direction:column;
@@ -110,6 +128,8 @@ body.pointer-fine .cursor-glow{opacity:.6}
 .tint{position:absolute;inset:0;background:linear-gradient(100deg,var(--color),transparent 55%);opacity:0;mix-blend-mode:overlay;pointer-events:none;z-index:3}
 .bcursor{position:absolute;left:0;top:0;color:#fff;font-size:.9rem;opacity:0;z-index:5;pointer-events:none;transform:translate(-50%,-50%) rotate(-12deg);filter:drop-shadow(0 2px 5px #000)}
 @media(max-width:900px){.hero{padding-top:104px}.hero-grid{grid-template-columns:1fr;gap:38px;text-align:center}.hero-copy{max-width:none;margin:0 auto}.hero-copy .hero-stats{justify-content:center}.builder{max-width:460px}}
+/* Móvil: el logo 3D dibuja "CREATIVE DESIGN" al centro; el eyebrow del hero caía justo encima → se oculta (el logo ya comunica marca). */
+@media(max-width:640px){.hero-overlay .eyebrow{display:none}}
 
 /* --- ACTO 1 · hero partículas → dive-in → ADN (una secuencia, un stage fijo) --- */
 .act1{position:relative;height:850vh;background:transparent;z-index:1}

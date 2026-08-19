@@ -303,3 +303,18 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
   }
   build();
 })();
+
+/* menú móvil (hamburguesa): en ≤820px los nav-links viven en un panel desplegable */
+(() => {
+  const nav = document.getElementById('nav'), burger = document.getElementById('navBurger');
+  if (!nav || !burger) return;
+  const close = () => { nav.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); };
+  burger.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = nav.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  nav.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', close));
+  document.addEventListener('click', e => { if (nav.classList.contains('open') && !nav.contains(e.target)) close(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
