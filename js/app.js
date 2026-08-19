@@ -244,6 +244,7 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
   if (innerWidth <= 820) { setReveal(1); return; }          // móvil: CSS pone el showcase en flujo normal (el frame apaisado se recortaría feo en vertical)
   layoutScreen(DESK_SCALE);
   setReveal(0);                                             // showcase oculto hasta que #proyectos se fija
+  window.__DESK_PIN = true;   // hay pin: a partir de aquí app.js gobierna el canvas fijo (dna.js no lo apaga solo)
   ScrollTrigger.create({
     trigger: '.proyectos', start: 'top top',
     end: () => '+=' + Math.round(trackDist() + innerHeight * 0.4),   // +0.4vh para el asentamiento inicial, luego el scroll horizontal de las cards
@@ -251,10 +252,13 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
     onRefresh: () => layoutScreen(DESK_SCALE),
     onUpdate: self => paint(self.progress),
     // relevo del hero: dibuja el escritorio (al progreso actual, NO forzado) en #prDesk y apaga el canvas fijo
-    onEnter: self => { paint(self.progress); cvs.style.opacity = '0'; cvs.style.visibility = 'hidden'; },
-    onEnterBack: self => { paint(self.progress); cvs.style.opacity = '0'; cvs.style.visibility = 'hidden'; },
-    onLeave: () => {},   // hacia Servicios: #prDesk + showcase SUBEN con el pin al soltarse (no se ocultan) → el monitor no "desaparece"
-    onLeaveBack: () => { dctx.clearRect(0, 0, deskCvs.width, deskCvs.height); setReveal(0); cvs.style.visibility = 'visible'; cvs.style.opacity = '1'; }   // de vuelta al hero: limpia #prDesk (para no encimar) y el canvas fijo retoma el pull-back inverso
+    // __DESK_OWNS_CANVAS: mientras esté en true, dna.js NO toca el canvas fijo (ver dna.js). Sin esta
+    // bandera, el pin-spacer altera la geometría de #proceso y dna.js reenciende la hélice ENCIMA del
+    // showcase y de la galería.
+    onEnter: self => { window.__DESK_OWNS_CANVAS = true; paint(self.progress); cvs.style.opacity = '0'; cvs.style.visibility = 'hidden'; },
+    onEnterBack: self => { window.__DESK_OWNS_CANVAS = true; paint(self.progress); cvs.style.opacity = '0'; cvs.style.visibility = 'hidden'; },
+    onLeave: () => { window.__DESK_OWNS_CANVAS = true; cvs.style.opacity = '0'; cvs.style.visibility = 'hidden'; },   // hacia Servicios/galería: el canvas fijo queda apagado (si no, la hélice flota sobre lo de abajo)
+    onLeaveBack: () => { window.__DESK_OWNS_CANVAS = false; dctx.clearRect(0, 0, deskCvs.width, deskCvs.height); setReveal(0); cvs.style.visibility = 'visible'; cvs.style.opacity = '1'; }   // de vuelta al hero: limpia #prDesk (para no encimar) y el canvas fijo retoma el pull-back inverso
   });
   addEventListener('resize', () => layoutScreen(DESK_SCALE));
 })();

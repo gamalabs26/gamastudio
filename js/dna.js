@@ -83,14 +83,25 @@
     });
   }
 
+  /* En MÓVIL no existe el pin del showcase (app.js sale antes de crearlo), así que NADIE apagaría este
+     canvas FIJO al terminar el hero: la hélice se quedaba flotando sobre servicios y la galería. Aquí lo
+     estacionamos cuando nadie más lo gobierna. Se llama también desde el listener de 'scroll' (no solo
+     desde el rAF) porque el rAF puede estar pausado —pestaña en segundo plano, volver a la app— y el
+     apagado no puede depender de que esté vivo. Con pin (desktop) no se toca: ahí manda app.js. */
+  function parkIfOwnerless() {
+    if (window.__DESK_PIN || window.__DESK_OWNS_CANVAS) return;
+    if (calcProg() < 0.9995) return;                     // sigue dentro del hero: el canvas debe verse
+    if (canvas.style.visibility !== 'hidden') { canvas.style.opacity = '0'; canvas.style.visibility = 'hidden'; }
+  }
+
   function apply(p) {
     window.__ACT1P = p;                                  // lo leen las partículas del logo (hero3d.js)
-    // Cede el canvas a app.js SOLO cuando #proyectos ya se fijó (scroll CRUDO = 1). Hasta ahí dna.js
-    // dibuja TODO, incluido el pull-back → no hay hélice congelada ni línea de división. Se usa el
-    // scroll crudo (calcProg), NO el prog suavizado, para que con scroll rápido no peleen los dos scripts.
-    // Cuando #proyectos se fija, app.js es el ÚNICO dueño del canvas (lo apaga en onEnter/onLeave y lo
-    // reenciende en onLeaveBack). dna.js NO lo toca aquí para no crear zonas muertas ni pelear con el pin.
-    if (calcProg() >= 0.9995) return;
+    // PROPIEDAD DEL CANVAS: en cuanto #proyectos se fija, app.js es el ÚNICO dueño (lo apaga al entrar,
+    // lo reenciende en onLeaveBack). No basta con mirar calcProg: al fijar el pin, ScrollTrigger inserta
+    // un pin-spacer que CAMBIA la geometría de #proceso, calcProg vuelve a caer bajo 1 y dna.js reencendía
+    // el canvas fijo → la hélice reaparecía sobre el showcase y la galería. La bandera lo hace explícito.
+    if (window.__DESK_OWNS_CANVAS) return;
+    if (calcProg() >= 0.9995) { parkIfOwnerless(); return; }
     const cop = sstep(0.14, 0.16, p);                    // el video toma la escena tras el morph
     canvas.style.opacity = cop.toFixed(3);
     canvas.style.visibility = cop > 0.001 ? 'visible' : 'hidden';
@@ -125,12 +136,16 @@
   let prog = 0, active = true, raf = 0;
   function tick() {
     const target = calcProg();
-    prog += (target - prog) * 0.16;
-    if (Math.abs(target - prog) < 0.0004) prog = target;
+    // El PULL-BACK (última pantalla del hero) va 1:1 CON EL SCROLL, sin suavizar: con el suavizado el
+    // prog se rezaga ~1s y, cuando el scroll crudo ya llegó al final y el pin toma el control, los frames
+    // 149→215 no alcanzaron a dibujarse — el efecto de "salir del ADN al monitor" se perdía y el monitor
+    // simplemente aparecía. El dive y la rotación SÍ siguen suavizados (ahí el rezago no se nota).
+    if (target >= PB_START()) prog = target;
+    else { prog += (target - prog) * 0.16; if (Math.abs(target - prog) < 0.0004) prog = target; }
     apply(prog);
     if (active || Math.abs(target - prog) > 0.0004) raf = requestAnimationFrame(tick); else raf = 0;
   }
-  function kick() { if (!raf) raf = requestAnimationFrame(tick); }
+  function kick() { parkIfOwnerless(); if (!raf) raf = requestAnimationFrame(tick); }   // el apagado va SÍNCRONO aquí: no puede depender del rAF (puede estar pausado)
   new IntersectionObserver(e => { active = e[0].isIntersecting; if (active) kick(); }, { rootMargin: '300px' }).observe(section);
   addEventListener('scroll', kick, { passive: true });
   addEventListener('resize', () => { resize(); kick(); });
