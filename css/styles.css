@@ -11,7 +11,8 @@
   --display:'Outfit',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+/* NO usar scroll-behavior:smooth aquí: rompe los pins de GSAP ScrollTrigger (el scroll animado del
+   navegador desincroniza el pin del showcase → secciones encimadas / "al azar" al usar el menú o saltar). */
 body{background:var(--bg);color:var(--text);font-family:var(--body);font-weight:400;line-height:1.6;
   -webkit-font-smoothing:antialiased;overflow-x:hidden}
 .mono{font-family:var(--display);font-weight:500;letter-spacing:.02em}

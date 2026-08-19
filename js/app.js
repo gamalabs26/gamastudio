@@ -2,6 +2,32 @@
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(pointer: fine)').matches;
 gsap.registerPlugin(ScrollTrigger);
+// Al recargar A MEDIA PÁGINA, el navegador restaura el scroll ANTES de que ScrollTrigger fije sus pins
+// → el estado queda desincronizado (showcase dibujado al inicio, fondo negro, hélice ausente). Arrancamos
+// siempre desde arriba, limpio, para que el pin del showcase se calcule con la página en su origen.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+addEventListener('beforeunload', () => window.scrollTo(0, 0));
+// Saltos por ancla (#): son instantáneos y por sí solos NO disparan un tick que redibuje el ADN ni el
+// escritorio del showcase → la pantalla queda NEGRA hasta el siguiente scroll. Tras el salto forzamos el
+// redibujado (ScrollTrigger.update + un 'scroll' que despierta dna.js) en este frame y en el siguiente.
+addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const href = a.getAttribute('href');
+  if (href.length < 2) return;
+  const target = document.querySelector(href);
+  if (!target) return;
+  e.preventDefault();
+  target.scrollIntoView();
+  // Empujar varios frames: tras un salto, dna.js/hero3d/el pin necesitan unos ticks para converger al
+  // nuevo scroll (si no, se ve un frame intermedio del hero congelado). Forzamos ~18 frames de redibujado.
+  let n = 0;
+  const wake = () => { ScrollTrigger.update(); dispatchEvent(new Event('scroll')); if (++n < 18) requestAnimationFrame(wake); };
+  wake();
+});
+// Recalcular start/end del pin cuando ya cargaron imágenes/fuentes: si la geometría del hero cambia después
+// de crear el pin, su 'start' queda viejo y aparece una franja muerta entre el hero y el showcase.
+addEventListener('load', () => ScrollTrigger.refresh());
 
 /* ---- inyectar previews reales de sitios (portafolio) ---- */
 (() => {

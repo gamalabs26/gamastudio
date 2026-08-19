@@ -88,12 +88,9 @@
     // Cede el canvas a app.js SOLO cuando #proyectos ya se fijó (scroll CRUDO = 1). Hasta ahí dna.js
     // dibuja TODO, incluido el pull-back → no hay hélice congelada ni línea de división. Se usa el
     // scroll crudo (calcProg), NO el prog suavizado, para que con scroll rápido no peleen los dos scripts.
-    // Al ceder el canvas a app.js hay que APAGARLO: es position:fixed, y si se queda con la última
-    // opacidad del pull-back (1) sigue flotando sobre la galería/servicios al bajar (secciones encimadas).
-    if (calcProg() >= 0.9995) {
-      if (canvas.style.visibility !== 'hidden') { canvas.style.opacity = '0'; canvas.style.visibility = 'hidden'; }
-      return;
-    }
+    // Cuando #proyectos se fija, app.js es el ÚNICO dueño del canvas (lo apaga en onEnter/onLeave y lo
+    // reenciende en onLeaveBack). dna.js NO lo toca aquí para no crear zonas muertas ni pelear con el pin.
+    if (calcProg() >= 0.9995) return;
     const cop = sstep(0.14, 0.16, p);                    // el video toma la escena tras el morph
     canvas.style.opacity = cop.toFixed(3);
     canvas.style.visibility = cop > 0.001 ? 'visible' : 'hidden';
