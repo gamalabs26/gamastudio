@@ -5,12 +5,18 @@ gsap.registerPlugin(ScrollTrigger);
 
 /* ---- inyectar previews reales de sitios (portafolio) ---- */
 (() => {
-  const NAMES = { cepa:'CEPA', vialactea:'VÍA LÁCTEA', obtura:'OBTURA', anden:'ANDÉN', anima:'ÁNIMA', helios:'HELIOS', palacio:'CINE PALACIO', copal:'CASA COPAL', niebla:'NIEBLA', minutero:'MINUTERO', neon:'NÉON', cumbre:'CUMBRE', meridiano:'MERIDIANO', lazaro:'LÁZARO', automata:'AUTÓMATA', helice:'HÉLICE', volta:'VOLTA', vivero:'VIVERO', plasma:'PLASMA', vertice:'VÉRTICE', nauta:'NAUTA', miga:'MIGA', noctambula:'NOCTÁMBULA', pigmento:'PIGMENTO', sumi:'SUMI', madrugada:'MADRUGADA', grado:'GRADO', reticula:'RETÍCULA', ruido:'RUIDO', modula:'MODULA', pulso:'PULSO', enjambre:'ENJAMBRE', gravedad:'GRAVEDAD', canon:'CANON', oraculo:'ORÁCULO', vitrea:'VÍTREA', faro:'FARO' };
-  const FEATURED = [['cepa','Landing cinemática'],['vialactea','Scrollytelling'],['obtura','Producto interactivo'],['helios','WebGL · shader'],['anima','Showcase 3D'],['palacio','Experiencia Art Déco'],['anden','Scroll narrativo'],['copal','Lujo editorial'],['niebla','Video hero'],['minutero','Zoom infinito'],['cumbre','Scroll ascendente'],['pigmento','Fluidos WebGL']];
+  const NAMES = { grupodriel:'GRUPODRIEL', wallshield:'WALLSHIELD', silidriel:'SILIDRIEL', mayanseas:'MAYANSEAS', kayak:'KAYAK QRO', apiyauya:'APIYAUYA', taart:'TAART', cuidados:'CUIDADOS ESP.', entretanto:'(ENTRE TANTO)', doncarlos:'DON CARLOS', gamalabs:'GAMALABS', cepa:'CEPA', vialactea:'VÍA LÁCTEA', obtura:'OBTURA', anden:'ANDÉN', anima:'ÁNIMA', helios:'HELIOS', palacio:'CINE PALACIO', copal:'CASA COPAL', niebla:'NIEBLA', minutero:'MINUTERO', neon:'NÉON', cumbre:'CUMBRE', meridiano:'MERIDIANO', lazaro:'LÁZARO', automata:'AUTÓMATA', helice:'HÉLICE', volta:'VOLTA', vivero:'VIVERO', plasma:'PLASMA', vertice:'VÉRTICE', nauta:'NAUTA', miga:'MIGA', noctambula:'NOCTÁMBULA', pigmento:'PIGMENTO', sumi:'SUMI', madrugada:'MADRUGADA', grado:'GRADO', reticula:'RETÍCULA', ruido:'RUIDO', modula:'MODULA', pulso:'PULSO', enjambre:'ENJAMBRE', gravedad:'GRAVEDAD', canon:'CANON', oraculo:'ORÁCULO', vitrea:'VÍTREA', faro:'FARO' };
+  const FEATURED = [['grupodriel','Grupo industrial · scroll-story'],['wallshield','Interactivo · borra el graffiti'],['silidriel','Producto técnico · alta tensión'],['mayanseas','Marca náutica'],['kayak','Video scrub · aventura'],['apiyauya','Scrollytelling · causa'],['taart','Editorial gourmet'],['cuidados','ECG dibujado por scroll'],['entretanto','Cámara inmersiva'],['doncarlos','Frame-scrub cinemático'],['gamalabs','Shader WebGL']];
+  const URLS = { grupodriel:'https://grupodriel.com', wallshield:'https://wallshield-web-production.up.railway.app', silidriel:'https://grupodriel.com/silidriel', mayanseas:'https://mayanseas.netlify.app', kayak:'https://gamalabs26.github.io/kayak-queretaro/', apiyauya:'https://gamalabs26.github.io/apiyauya/', taart:'https://gamalabs26.github.io/taart/', cuidados:'https://gamalabs26.github.io/cuidados-especiales-mx/', entretanto:'https://gamalabs26.github.io/entre-tanto-cafe/', doncarlos:'https://gamalabs26.github.io/don-carlos/', gamalabs:'https://gamalabs26.github.io/gamalabs/' };
+  // El clic va al sitio que se ve en la captura. LABELS solo cambia el texto del "chrome" del mockup cuando el
+  // dominio de marca aún no sirve el sitio premium (WallShield: premium en staging, wallshieldcoat.com sirve el WP viejo).
+  const LABELS = { wallshield:'wallshieldcoat.com' };
+  const urlOf = s => URLS[s] || `https://gamalabs26.github.io/${s}/`;
+  const host = s => LABELS[s] || urlOf(s).replace(/^https?:\/\//,'').replace(/\/$/,'');
   const ALL = ['cepa','obtura','vialactea','anden','anima','helios','palacio','copal','niebla','minutero','neon','cumbre','meridiano','lazaro','automata','helice','volta','vivero','plasma','vertice','nauta','miga','noctambula','pigmento','sumi','madrugada','grado','reticula','ruido','modula','pulso','enjambre','gravedad','canon','oraculo','vitrea','faro'];
   const track = document.getElementById('prTrack'), gal = document.getElementById('galGrid');
-  if (track) track.innerHTML = FEATURED.map(([s, t]) => `<article class="work-card tilt"><div class="wc-bar"><span class="wc-dot r"></span><span class="wc-dot"></span><span class="wc-dot"></span><span class="wc-url">gamastudio.mx/${s}</span></div><div class="wc-shot"><img src="assets/work/${s}.jpg" alt="Sitio ${NAMES[s]}" loading="eager"></div><div class="wc-meta"><span class="wc-name">${NAMES[s]}</span><span class="wc-type">${t}</span></div></article>`).join('');
-  if (gal) gal.innerHTML = ALL.map(s => `<div class="gal-item"><img src="assets/work/${s}.jpg" alt="${NAMES[s]}" loading="lazy"><span class="gi-name">${NAMES[s]}</span></div>`).join('');
+  if (track) track.innerHTML = FEATURED.map(([s, t]) => `<a class="work-card tilt" href="${urlOf(s)}" target="_blank" rel="noopener"><div class="wc-bar"><span class="wc-dot r"></span><span class="wc-dot"></span><span class="wc-dot"></span><span class="wc-url">${host(s)}</span></div><div class="wc-shot"><img src="assets/work/${s}.jpg" alt="Sitio ${NAMES[s]}" loading="eager"></div><div class="wc-meta"><span class="wc-name">${NAMES[s]}</span><span class="wc-type">${t}</span></div></a>`).join('');
+  if (gal) gal.innerHTML = ALL.map(s => `<a class="gal-item" href="https://gamalabs26.github.io/${s}/" target="_blank" rel="noopener"><img src="assets/work/${s}.jpg" alt="${NAMES[s]}" loading="lazy"><span class="gi-name">${NAMES[s]}</span></a>`).join('');
 })();
 
 /* cursor custom + glow */
@@ -147,54 +153,84 @@ const apCta = document.getElementById('apertureCta'); if (apCta) aperture(apCta,
   if (reduce) tr.style.animation = 'none';
 })();
 
-/* PROYECTOS — dibuja sobre el MISMO canvas fijo del hero (#dnaCanvas), que no se desliza en la
-   transición: aquí solo se continúa la rotación. El hero termina en 149; como 61→149 es ≈ una
-   vuelta completa (149≈61), entra en 61 sin salto y rota 61→149 SCRUBBEADA con el scroll de las
-   cards (mismo sentido, solo gira si haces scroll). El canvas se enciende/apaga por rango con un
-   IntersectionObserver (sirve desktop y móvil); dna.js lo controla mientras el hero está en vista. */
+/* PROYECTOS — el PULL-BACK lo hace dna.js en la última pantalla del hero (antes zona muerta); aquí el
+   escritorio YA está revelado (frame 215). #proyectos lo FIJA de fondo y muestra el showcase DENTRO del
+   monitor: el título/texto va FUERA (arriba, sobre el fondo), y en el monitor sólo las cards (más grandes),
+   que avanzan horizontalmente (#prScreen, recortado con overflow:hidden). #prScreen se posiciona por JS
+   sobre el vidrio del monitor replicando el "cover" del canvas, así calza a cualquier tamaño de ventana.
+   Al pasar a Servicios el canvas se apaga; al volver al hero, dna.js retoma el ADN y el pull-back inverso. */
 (() => {
   const pin = document.getElementById('prPin'), track = document.getElementById('prTrack');
   const cvs = document.getElementById('dnaCanvas'), sec = document.querySelector('.proyectos');
-  if (!pin || !track || !cvs || !sec || reduce) return;
-  const ctx = cvs.getContext('2d'); if (!ctx) return;
+  const screenEl = document.getElementById('prScreen'), head = document.querySelector('.pr-head');
+  const deskCvs = document.getElementById('prDesk');
+  if (!pin || !track || !cvs || !sec || !screenEl || !deskCvs || reduce) return;
+  const dctx = deskCvs.getContext('2d'); if (!dctx) return;
   const dpr = Math.min(devicePixelRatio || 1, 2);
-  const A = 61, B = 149;                                  // rotación pura (61→149 ≈ una vuelta; sin el pull-back 150-159)
-  const imgs = {};
-  for (let n = A; n <= B; n++) { const im = new Image(); im.src = `assets/dna/frames/f_${String(n).padStart(3, '0')}.jpg`; imgs[n] = im; }
-  let active = false, lastProg = 0;
-  function ensureSize() { const w = Math.round(cvs.clientWidth * dpr), h = Math.round(cvs.clientHeight * dpr); if (cvs.width !== w || cvs.height !== h) { cvs.width = w; cvs.height = h; } }
-  function cover(img) {
-    if (!img || !img.complete || !img.naturalWidth) return;
-    const cw = cvs.width, ch = cvs.height, s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
-    ctx.clearRect(0, 0, cw, ch); ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
-  }
-  function drawAt(prog) {                                 // prog 0..1 → rota 61→149 hacia ADELANTE (mismo sentido que el hero)
-    lastProg = prog < 0 ? 0 : prog > 1 ? 1 : prog;
+  const IW = 1280, IH = 720;                               // tamaño de los frames del escritorio
+  const DESK = 215;                                        // frame del escritorio revelado (dna.js hace el pull-back que termina aquí)
+  const SCREEN = { x: 0.159, y: 0.034, w: 0.680, h: 0.695 }; // vidrio del monitor en el frame (medido a píxel en f_215). AJUSTA si el showcase no calza exacto
+  const deskImg = new Image(); deskImg.src = `assets/dna/frames/f_${DESK}.jpg`;
+  const DESK_SCALE = 0.78;                                 // el escritorio NO llena la pantalla: se asienta a este tamaño, dejando una banda arriba para el título
+  const BG = '#06040a';                                    // color de las bandas (alrededor del escritorio escalado)
+  // el escritorio del portafolio se dibuja en #prDesk (DENTRO del pin) → sube con el scroll a la sección
+  // siguiente al soltarse el pin (no queda fijo ni "desaparece"). El canvas fijo (cvs) es sólo del hero/pull-back.
+  function ensureSize() { const w = Math.round(deskCvs.clientWidth * dpr), h = Math.round(deskCvs.clientHeight * dpr); if (deskCvs.width !== w || deskCvs.height !== h) { deskCvs.width = w; deskCvs.height = h; } }
+  // dibuja el escritorio a `scale` del cover, anclado ABAJO-centro, con las bandas en negro
+  function drawDesk(scale) {
     ensureSize();
-    const im = imgs[A + Math.round(lastProg * (B - A))];
-    if (im && im.complete) cover(im); else { const f = imgs[A]; if (f && f.complete) cover(f); }
+    const cw = deskCvs.width, ch = deskCvs.height;
+    dctx.fillStyle = BG; dctx.fillRect(0, 0, cw, ch);
+    if (!deskImg.complete || !deskImg.naturalWidth) return;
+    const cs = Math.max(cw / IW, ch / IH), w = IW * cs * scale, h = IH * cs * scale;
+    dctx.drawImage(deskImg, (cw - w) / 2, ch - h, w, h);  // abajo-centro
   }
-  /* opacidad del canvas por rango (desktop + móvil): visible mientras #proyectos esté en viewport;
-     al pasarlo (queda arriba), se apaga para no tapar Servicios. Cuando aún no llega, no lo tocamos
-     (lo gobierna dna.js con el hero). */
-  new IntersectionObserver(es => {
-    const e = es[0];
-    if (e.isIntersecting) { active = true; cvs.style.opacity = '1'; drawAt(lastProg); }
-    else if (e.boundingClientRect.top < 0) { active = false; cvs.style.opacity = '0'; }
-    else { active = false; }
-  }, { threshold: 0 }).observe(sec);
-  addEventListener('resize', () => { if (active) drawAt(lastProg); });
-  if (innerWidth <= 820) return;                          // móvil: sin pin/scrub (CSS hace scroll horizontal) → hélice fija ≈149
-  gsap.to(track, {
-    x: () => -(track.scrollWidth - pin.clientWidth + 50),
-    ease: 'none',
-    scrollTrigger: {
-      trigger: '.proyectos', start: 'top top',
-      end: () => '+=' + (track.scrollWidth - pin.clientWidth + 50),
-      scrub: .6, pin: pin, anticipatePin: 1, invalidateOnRefresh: true,
-      onUpdate: self => { if (active) drawAt(self.progress); }
+  // geometría (CSS px) del escritorio a `scale`, anclado abajo-centro
+  function deskRect(scale) {
+    const vw = deskCvs.clientWidth, vh = deskCvs.clientHeight, cs = Math.max(vw / IW, vh / IH);
+    const w = IW * cs * scale, h = IH * cs * scale;
+    return { ox: (vw - w) / 2, oy: vh - h, w, h };
+  }
+  // posiciona #prScreen sobre el vidrio del monitor, y el título en la banda superior, alineado al monitor
+  function layoutScreen(scale) {
+    const r = deskRect(scale);
+    const mL = r.ox + SCREEN.x * r.w, mT = r.oy + SCREEN.y * r.h, mW = SCREEN.w * r.w, mH = SCREEN.h * r.h;
+    screenEl.style.left = mL + 'px'; screenEl.style.top = mT + 'px';
+    screenEl.style.width = mW + 'px'; screenEl.style.height = mH + 'px';
+    if (head) {
+      head.style.left = mL + 'px'; head.style.width = mW + 'px';
+      head.style.top = Math.max(70, mT - (head.offsetHeight || 120) - 16) + 'px';   // arriba del monitor, en la banda
     }
+  }
+  function trackDist() { return Math.max(0, track.scrollWidth - screenEl.clientWidth + 24); }
+  function setReveal(r) { r = Math.max(0, Math.min(1, r)).toFixed(3); screenEl.style.opacity = r; if (head) head.style.opacity = r; }
+  // al fijarse #proyectos el escritorio se ASIENTA (cover→DESK_SCALE) revelando la banda con el título;
+  // luego las cards avanzan horizontalmente dentro del monitor. dna.js entregó el escritorio a cover (scale 1) → sin salto.
+  function paint(p) {
+    const settle = Math.min(1, p / 0.10);
+    const scale = 1 - (1 - DESK_SCALE) * settle;
+    drawDesk(scale);
+    layoutScreen(scale);
+    setReveal(Math.min(1, p / 0.03));                      // el showcase cubre el monitor RÁPIDO (tapa el sitio horneado antes de que se note), mientras el escritorio se asienta
+    const q = Math.max(0, (p - 0.10) / 0.90);
+    track.style.transform = 'translateX(' + (-trackDist() * q).toFixed(1) + 'px)';
+  }
+  if (innerWidth <= 820) { setReveal(1); return; }          // móvil: CSS pone el showcase en flujo normal (el frame apaisado se recortaría feo en vertical)
+  layoutScreen(DESK_SCALE);
+  setReveal(0);                                             // showcase oculto hasta que #proyectos se fija
+  ScrollTrigger.create({
+    trigger: '.proyectos', start: 'top top',
+    end: () => '+=' + Math.round(trackDist() + innerHeight * 0.4),   // +0.4vh para el asentamiento inicial, luego el scroll horizontal de las cards
+    pin: pin, anticipatePin: 1, invalidateOnRefresh: true,
+    onRefresh: () => layoutScreen(DESK_SCALE),
+    onUpdate: self => paint(self.progress),
+    // relevo del hero: dibuja el escritorio (al progreso actual, NO forzado) en #prDesk y apaga el canvas fijo
+    onEnter: self => { paint(self.progress); cvs.style.opacity = '0'; cvs.style.visibility = 'hidden'; },
+    onEnterBack: self => { paint(self.progress); cvs.style.opacity = '0'; cvs.style.visibility = 'hidden'; },
+    onLeave: () => {},   // hacia Servicios: #prDesk + showcase SUBEN con el pin al soltarse (no se ocultan) → el monitor no "desaparece"
+    onLeaveBack: () => { dctx.clearRect(0, 0, deskCvs.width, deskCvs.height); setReveal(0); cvs.style.visibility = 'visible'; cvs.style.opacity = '1'; }   // de vuelta al hero: limpia #prDesk (para no encimar) y el canvas fijo retoma el pull-back inverso
   });
+  addEventListener('resize', () => layoutScreen(DESK_SCALE));
 })();
 
 /* ---- HERO: campo 3D de sitios reales (parallax + deriva) ---- */
